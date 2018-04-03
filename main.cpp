@@ -7,14 +7,30 @@
 using namespace std;
 
 void play(map &mymap){
+	int turn=0;
+	int spawnitem =0;
 	char key;
+
 	while(key != 27)
 	{
+		if(turn %4==0 && spawnitem !=2){
+			spawnitem =1;
+		}
+		else if(spawnitem ==2 &&turn %4!=0)
+		{
+			spawnitem =0;
+		}
 		if (_kbhit()==1)
 	    {
 	        key=getch();
 	    }
-	    mymap.update();
+	    
+	   //mymap.update();
+	    if(spawnitem ==1)
+	    {
+	    	//mymap.spawnitem();
+	    	spawnitem++;
+		}
 	}
 }
 

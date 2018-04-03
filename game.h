@@ -16,31 +16,33 @@ struct position{
 struct linkpad{
 	int Head,Tail;
 };
-
-struct item{
+class item{
 	int id;
 	string name;
+	public:
+	//string name;
+	item(int,string);
+	void use(string,player *,pad *);
+	void drawitem(const position &);
+	void upitem();	
 };
+item::item(int i,string n){
+	id =i;
+	name = n;
+	
+}
 /////////////////////////////////////////////////////////////////
 //-------------------------------------------------------------------------------------------ITEM-------------------------------------------------------------------------------------------//
 string itemNameList[]={"Sheild","Ice","Warpscroll"};
 vector<item> itemlist;
-void cretiem(){
+void creitem(){
 	for(int i=0;i< sizeof(itemNameList)/sizeof(itemNameList[0]) ;i++)
-	itemlist.push_back({i,itemNameList[i]});
+	{
+	itemlist.push_back(item(i,itemNameList[i]));
+	cout<<itemNameList[i]<<endl;
+	}
 	
 }
-
-/*class item{
-	string name;
-	public:*/
-	void use(string,player *,pad *);
-	//item();
-	void drawitem(const position &,const item &);
-	position posItemPad(const position &);
-	void upitem();
-/*};*/
-
 
 position posItemPad(const position &p){
 	position np;
@@ -49,8 +51,8 @@ position posItemPad(const position &p){
 	return np;
 	
 }
-void drawitem(const position &p,const item &i){
-	if(i.name =="Sheild" ){
+void item::drawitem(const position &p){
+	if(name =="Sheild" ){
 		gotoxy(p.x,p.y);
 		psq(176,1.5);
 		gotoxy(p.x,p.y-1);
@@ -60,7 +62,7 @@ void drawitem(const position &p,const item &i){
 		colorit(15);
 		psq(176,0.5);
 	}
-	else if(i.name =="Ice")
+	else if(name =="Ice")
 	{
 		gotoxy(p.x,p.y);
 		psq(240,1.5);
@@ -71,7 +73,7 @@ void drawitem(const position &p,const item &i){
 		colorit(15);
 		psq(240,0.5);
 	}
-	else if(i.name =="Warpscroll"){
+	else if(name =="Warpscroll"){
 		gotoxy(p.x,p.y);
 		colorit(15);
 		cout<<"W";
@@ -189,7 +191,6 @@ void drawstar(position p, int f=0)
 		psq(239,1);
 		psq(240,1);
 		gotoxy(p.x+4,p.y-4);
-;
 		psq(239,2);
 		psq(240,1);
 		psq(239,2);
@@ -312,7 +313,6 @@ map::map(int mp,int pl,int l,int crp){
 		int loc=rand()%(numpad.size()-2)+1;
 		prand[i]=numpad[loc];
 		numpad.erase(numpad.begin()+loc);
-		//cout<<"rand:"<<prand[i]<<endl;
 	}
 	
 	int pX=0,pY=0;
@@ -322,13 +322,11 @@ map::map(int mp,int pl,int l,int crp){
 		int pcolor;
 		char ptype='N';
 		int level= ((i-(i%PPL))/PPL);
-		//cout<<"level"<<level
 		pcolor = i%2==0? 159:47;
 		
 		if(level%2==0) pX = 18*(i%PPL);
 		else pX=18*((PPL-1)-(i%PPL));
 		pX +=(int)((230-(18*PPL))/2);
-		//(250-(18PPL)/2);
 		
 		pY = (7*((maxpad-(maxpad%PPL))/PPL+1))-(7*level);//set position of map
 		int go=0;
@@ -359,11 +357,9 @@ map::map(int mp,int pl,int l,int crp){
 		}
 		
 		pads.push_back(pad(i+1,pcolor,ptype,pX,pY,go));
-		//cout<<&pads.back()<<endl;
-		//pad crepad;
 		
 	}
-
+	//creitem();
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////
 void map::drawmap(){
@@ -420,16 +416,21 @@ void map::update(){
 }
 /////////////////////////////////////////////////////////////////////////
 void map::spawnitem(){
-	vector<int> numpad;
+	vector<int> numpad;//get pad that empty(ready for push item in)
 		for(int i=2;i<maxpad;i++ )
 		{
-			if(pads[i].type =='N' && pads[i].onpadItem == NULL) numpad.push_back(i);
+			if(pads[i].type =='N' && pads[i].onpadItem == NULL) {
+			numpad.push_back(i);
+			cout<<i;
+			}
+			cout<<"i";
 		}
 	for(int i=0;i< (maxpad/10);i++)
 		{
 			int loc = (rand()%(numpad.size()-2))+1;
 			int id = rand()%itemlist.size();
 			pads[i].spawnitem(id);
+			numpad.erase(numpad.begin()+loc);
 		}
 }
 //////////////////////////////////////////////////////////////////////////
@@ -438,6 +439,10 @@ void pad::uppad(int f,int last =0){
 	{
 		drawstar(pos,f);
 	}
+	/*if(onpadItem != NULL)
+	{
+		onpadItem->drawitem(posItemPad(pos));
+	}*/
 }
 
 //////////////////////////////////////////////////////////////////////////
