@@ -10,9 +10,19 @@ void play(map &mymap){
 	int turn=0;
 	int spawnitem =0;
 	char key;
-
-	while(key != 27)
+	/////////////////////////set player turn//////////////////////////////////
+	vector<int> order;
+	order.push_back(0);order.push_back(1);order.push_back(2);order.push_back(3);
+	for(int i=0;i<mymap.myplayer.size();i++)
 	{
+		int loc = rand()%order.size();
+		mymap.myplayer[i].myturn=order[loc];
+		order.erase(order.begin()+loc);
+	}
+	/////////////////////////////////////////////////////////////////////////////////
+	while(key != 27)//ESC
+	{
+		///////////////////////triged spawn item////////////////////////////////////
 		if(turn %4==0 && spawnitem !=2){
 			spawnitem =1;
 		}
@@ -20,18 +30,40 @@ void play(map &mymap){
 		{
 			spawnitem =0;
 		}
+		if(spawnitem ==1)
+	    {
+	    	mymap.spawnitem();
+	    	spawnitem++;
+		}
+		///////////////////////////////////////////////////////////////////////////
 		if (_kbhit()==1)
 	    {
 	        key=getch();
 	    }
-	    
-	   //mymap.update();
-	    if(spawnitem ==1)
-	    {
-	    	//mymap.spawnitem();
-	    	spawnitem++;
+	    if(key ==32)
+	    { 	
+	    	mymap.myplayer[turn%4].gotopad(rolldice(mymap));
+	    	key=getch();
+	    	/*char c='0';
+			while(c !=32)
+			{
+					if (_kbhit()==1)
+			    {
+			        c=getch();
+			    }
+			    cout<<"i";
+			    Sleep(50);
+			}*/
 		}
+	   //mymap.update();
 	}
+}
+void crechar(map &mymap){
+	mymap.myplayer.push_back(player(1,"P1",192,&mymap.pads[0],mymap.maxpad));
+	mymap.myplayer.push_back(player(2,"P2",16,&mymap.pads[0],mymap.maxpad));
+	mymap.myplayer.push_back(player(3,"P3",208,&mymap.pads[0],mymap.maxpad));
+	mymap.myplayer.push_back(player(4,"P4",160,&mymap.pads[0],mymap.maxpad));
+	
 }
 
 int showmeneu(){
@@ -106,6 +138,7 @@ int main(){
 		//cout<<comd;
 		if(comd==0){
 			map mymap =cremap();
+			crechar(mymap);
 			mymap.drawmap();
 			play(mymap);
 
