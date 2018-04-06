@@ -10,6 +10,7 @@ void play(map &mymap){
 	int turn=0;
 	int spawnitem =0;
 	char key;
+	mymap.padgetPlay();
 	/////////////////////////set player turn//////////////////////////////////
 	vector<int> order;
 	order.push_back(0);order.push_back(1);order.push_back(2);order.push_back(3);
@@ -36,13 +37,16 @@ void play(map &mymap){
 	    	spawnitem++;
 		}
 		///////////////////////////////////////////////////////////////////////////
-		if (_kbhit()==1)
+		if (_kbhit()==1)////////////animation
 	    {
 	        key=getch();
 	    }
-	    if(key ==32)
+	    if(key ==32)/////sapce bar rolldice and turn+
 	    { 	
 	    	mymap.myplayer[turn%4].gotopad(rolldice(mymap));
+	    	mymap.padgetPlay();
+	    	turn++;
+	    	
 	    	key=getch();
 	    	/*char c='0';
 			while(c !=32)
@@ -63,7 +67,6 @@ void crechar(map &mymap){
 	mymap.myplayer.push_back(player(2,"P2",16,&mymap.pads[0],mymap.maxpad));
 	mymap.myplayer.push_back(player(3,"P3",208,&mymap.pads[0],mymap.maxpad));
 	mymap.myplayer.push_back(player(4,"P4",160,&mymap.pads[0],mymap.maxpad));
-	
 }
 
 int showmeneu(){
