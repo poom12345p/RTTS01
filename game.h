@@ -59,6 +59,10 @@ void creitem(){
 position posItemPad(position p){
 	return position(p.x+8,p.y-3);
 }
+//////////////////////////////////////////////////////////////////////////
+int item::randitem(){
+	
+}
 ///////////////////////////////////////////////////////////////////////
 void item::drawitem(position p){
 
@@ -96,7 +100,7 @@ void item::drawitem(position p){
 class pad{
 	//int num;
 	int color;
-	int gotopad;
+	int linktopad;
 	position pos;
 	public:
 	int num;
@@ -109,6 +113,7 @@ class pad{
 	position ppos;
 	void uppad(int,int);
 	void removeItem();
+	void reOnPlayer();
 
 };
 /////////////////////////////////////////////////////////////////
@@ -118,7 +123,7 @@ pad::pad(int n,int l,char t,int x,int y,int go){
 	type= t;
 	pos.x = x;
 	pos.y =y;
-	gotopad =go;
+	linktopad =go;
 	ppos.x=pos.x;
 	ppos.y=pos.y;
 	onpadItem =0;
@@ -207,24 +212,28 @@ void player::drawstat(){
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void player::gotopad(int n){
 	pad * temppad = myPad;
-	if(myPad->num+n<= maxpad)myPad = myPad+n;
+	if(myPad->num+n <= maxpad) myPad = myPad+n;
+	
+	else{
+		n= maxpad-(myPad->num+n);
+		myPad =myPad+(maxpad-myPad->num);
+	}
 	position des(myPad->ppos.x+2+((num-1)*4),myPad->ppos.y-2);
 	
-	
+	bool walkdirec =true;//true = go upper +,flase = go back - 
+	if(temppad->num == maxpad && n<0)
+			{
+				walkdirec=false;
+				myPad = myPad+n;
+				des =position(myPad->ppos.x+2+((num-1)*4),myPad->ppos.y-2);
+			}
 	while(temppad != myPad)
 	{
+
 		pad *redrawpad = temppad;
-		//position p =posItemPad(redrawpad->ppos);
-		/*	//delete old
-			gotoxy(mypos.x,mypos.y);
-			psq(0,1);
-			gotoxy(mypos.x,mypos.y-1);
-			psq(0,1);
-			gotoxy(mypos.x,mypos.y-2);
-			psq(0,1);
-			//delete old*/
-			//if(temppad->onpadItem != 0)temppad->onpadItem->drawitem(p);//redraw item(for blocking item fade)
-		temppad++;
+		if(walkdirec)temppad++;
+		else temppad--;
+		
 		position tdes(temppad->ppos.x+2+((num-1)*4),temppad->ppos.y-2) ;
 		while(mypos.x != tdes.x || mypos.y != tdes.y)
 		{
@@ -236,8 +245,29 @@ void player::gotopad(int n){
 			gotoxy(mypos.x,mypos.y-2);
 			psq(0,1);
 			//delete old
+			
 			if(redrawpad->onpadItem != 0)redrawpad->onpadItem->drawitem(posItemPad(redrawpad->ppos));//redraw item(for blocking item fade)
 			if(temppad->onpadItem != 0)temppad->onpadItem->drawitem(posItemPad(temppad->ppos));
+			if(redrawpad->onpadPlay.size() >0){
+				for(int i =0;i<redrawpad->onpadPlay.size();i++)
+				{
+					if(redrawpad->onpadPlay[i]->num != num)
+					{
+						redrawpad->onpadPlay[i]->drawme();
+					}
+				}
+			}
+			if(temppad->onpadPlay.size() >0){
+				for(int i =0;i<temppad->onpadPlay.size();i++)
+				{
+					if(temppad->onpadPlay[i]->num != num)
+					{
+						temppad->onpadPlay[i]->drawme();
+					}
+					
+				}
+			}
+			
 			if(tdes.y == mypos.y){
 				if(tdes.x > mypos.x )
 				{
@@ -254,13 +284,25 @@ void player::gotopad(int n){
 			}
 			
 			drawme();
+			if(temppad->num == maxpad && n<0 && walkdirec)
+			{
+				walkdirec=false;
+				myPad = myPad+n;
+				des =position(myPad->ppos.x+2+((num-1)*4),myPad->ppos.y-2);
+			}
 			Sleep(25);
 		}
+
 	}
 	/*mypos.x=myPad->ppos.x+2+((num-1)*4);
 	mypos.y=myPad->ppos.y-2;*/
 }
-
+///////////////////////////////////////////////////////////////////////////
+void pad::reOnPlayer(){
+	while(onpadPlay.size()>0){
+		onpadPlay.erase(onpadPlay.begin());
+	}
+}
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////////////////
@@ -280,6 +322,7 @@ class map{
 	void update();
 	void spawnitem();
 	void checkno();
+	void padgetPlay();
 };
 
 /////////////////////////////////////////////////////////////////
@@ -380,18 +423,18 @@ void pad::drawpad(int last=0){
 	if(type == 'L')
 	{	
 		gotoxy(pos.x+7,pos.y);
-		if(gotopad < num) colorit(207);
+		if(linktopad < num) colorit(207);
 		else colorit(97);
 		
-		if(gotopad < num) 
+		if(linktopad < num) 
 		{
-			if(gotopad<10)cout <<"0";
-			cout<<gotopad<<"<-";
+			if(linktopad<10)cout <<"0";
+			cout<<linktopad<<"<-";
 		}
 		else {
 			cout<<"->";
-			if(gotopad<10)cout <<"0";
-			cout<<gotopad;
+			if(linktopad<10)cout <<"0";
+			cout<<linktopad;
 		}
 		colorit(15);
 	}
@@ -503,6 +546,7 @@ map::map(int mp,int pl,int l,int crp){
 		
 	}
 	creitem();
+	padgetPlay();
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////
 void map::drawmap(){
@@ -561,29 +605,41 @@ void map::update(){
 		gotoxy(0,0);
 
 }
-/////////////////////////////////////////////////////////////////////////
-int item::randitem(){
-	
+/////////////////////////////////////////////////////////////////////////////////
+void map::padgetPlay(){
+	for(int i=0;i<pads.size();i++)
+	{
+		pads[i].reOnPlayer();
+	}
+	for(int i=0;i<myplayer.size();i++)
+	{
+		myplayer[i].myPad->onpadPlay.push_back(&myplayer[i]);
+	}
 }
+/////////////////////////////////////////////////////////////////////////////////
+
 /////////////////////////////////////////////////////////////////////////////////
 void map::spawnitem(){
 	//cout<<"spawnitem\n";
 	vector<int> numpad;//get pad that empty(ready for push item in)
 		for(int i = 1;i<maxpad-1;i++ )
 		{
-			if(pads[i].onpadItem == 0)
+			if(pads[i].onpadItem == 0 && pads[i].onpadPlay.size()==0)
 			{
 			numpad.push_back(i);
 			}
 			
 		}
+		
 		for(int i=0;i< (maxpad/10);i++)
 		{
-			int loc = rand()%numpad.size();
-			int id = rand()%itemlist.size();
-			// = randitem();
-			pads[numpad[loc]].spawnitem(id);
-			numpad.erase(numpad.begin()+loc);
+			if(numpad.size()>0)
+			{	
+				int loc = rand()%numpad.size();
+				int id = rand()%itemlist.size();
+				pads[numpad[loc]].spawnitem(id);
+				numpad.erase(numpad.begin()+loc);
+			}
 		}
 }
 //////////////////////////////////////////////////////////////////////////
