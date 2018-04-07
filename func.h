@@ -20,12 +20,13 @@ void SetWindow(int Width, int Height)//don,t care//set window size
     }
 
 
-void psq(int c,float i){//draw pixel i block,color code c
+void psq(int c,float i,char p=0){//draw pixel i block,color code c
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleTextAttribute(hConsole,c); 
 	for(int j=0;j <i*2 ;j++)
 	{
-		cout <<" ";
+		if(p!=0)cout <<p;
+		else cout<<" ";
 	}
 	SetConsoleTextAttribute(hConsole,15); 
 }
