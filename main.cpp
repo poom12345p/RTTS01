@@ -14,12 +14,14 @@ void play(map &mymap){
 	/////////////////////////set player turn//////////////////////////////////
 	vector<int> order;
 	order.push_back(0);order.push_back(1);order.push_back(2);order.push_back(3);
+	////////random player turn
 	for(int i=0;i<mymap.myplayer.size();i++)
 	{
 		int loc = rand()%order.size();
 		mymap.myplayer[i].myturn=order[loc];
 		order.erase(order.begin()+loc);
 	}
+	mymap.upPlayStat(turn%mymap.myplayer.size());
 	/////////////////////////////////////////////////////////////////////////////////
 	while(key != 27)//ESC
 	{
@@ -43,21 +45,20 @@ void play(map &mymap){
 	    }
 	    if(key ==32)/////sapce bar rolldice and turn+
 	    { 	
-	    	mymap.myplayer[turn%4].gotopad(rolldice(mymap));
+	    	for(int i=0;i<mymap.myplayer.size();i++)
+	    	{
+	    		if(mymap.myplayer[i].myturn == turn%mymap.myplayer.size())
+	    		{
+					mymap.myplayer[i].gotopad(rolldice(mymap));
+	    			break;
+				}
+	    		
+	    	}
 	    	mymap.padgetPlay();
+	    	key =0;
 	    	turn++;
-	    	
-	    	key=getch();
-	    	/*char c='0';
-			while(c !=32)
-			{
-					if (_kbhit()==1)
-			    {
-			        c=getch();
-			    }
-			    cout<<"i";
-			    Sleep(50);
-			}*/
+
+	    	mymap.upPlayStat(turn);
 		}
 	   //mymap.update();
 	}
@@ -134,7 +135,6 @@ int main(){
 	colorit(15);
 	SetWindow(250,300);
 	int comd ;
-
 	while(comd !=2)
 	{
 		comd =showmeneu();

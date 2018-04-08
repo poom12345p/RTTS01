@@ -142,16 +142,14 @@ class player{
 	public:////////////
 	position mypos;
 	int no;
-	int myturn;
 	pad *myPad;
 	vector<item *> myitem;
+	int myturn;
 	//position pos;
 	player(int,string,int,pad *,int);
 	void drawme();
-	void drawstat();
+	void drawstat(int,int);
 	void gotopad(int);
-	
-	
 };
 //////////////////////////////////////////////////
 player::player(int n,string na,int c,pad *p,int mp){
@@ -159,7 +157,7 @@ player::player(int n,string na,int c,pad *p,int mp){
 	num=n;
 	no=1;
 	myPad = p;
-	myturn=0;
+	//myturn=0;
 	color=c;
 	mypos.x=myPad->ppos.x+2+((num-1)*4);
 	mypos.y=myPad->ppos.y-2;
@@ -179,7 +177,13 @@ void player::drawme(){
 	//gotoxy(0,0);
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void player::drawstat(){
+void player::drawstat(int p,int t){
+	gotoxy(statpos.x,statpos.y-1);
+	cout<<myturn<<" ";
+	if(t%p == myturn) cout<<"Your turn";
+	else if((t+1)%p == myturn) cout<<"Next";
+	else cout<<"            ";
+	
 	gotoxy(statpos.x,statpos.y);
 	psq(240,1);
 	cout <<" "<<"P"<<num<<": "<<name;
@@ -222,11 +226,11 @@ void player::gotopad(int n){
 	
 	bool walkdirec =true;//true = go upper +,flase = go back - 
 	if(temppad->num == maxpad && n<0)
-			{
-				walkdirec=false;
-				myPad = myPad+n;
-				des =position(myPad->ppos.x+2+((num-1)*4),myPad->ppos.y-2);
-			}
+	{
+		walkdirec=false;
+		myPad = myPad+n;
+		des =position(myPad->ppos.x+2+((num-1)*4),myPad->ppos.y-2);
+	}
 	while(temppad != myPad)
 	{
 
@@ -323,6 +327,7 @@ class map{
 	void spawnitem();
 	void checkno();
 	void padgetPlay();
+	void upPlayStat(int);
 };
 
 /////////////////////////////////////////////////////////////////
@@ -583,7 +588,7 @@ void map::drawmap(){
 	for(int i =0;i<myplayer.size();i++)
 	{
 		myplayer[i].drawme();
-		myplayer[i].drawstat();
+		myplayer[i].drawstat(myplayer.size(),0);
 	}
 	frame=0;
 }
@@ -617,7 +622,14 @@ void map::padgetPlay(){
 	}
 }
 /////////////////////////////////////////////////////////////////////////////////
-
+void map::upPlayStat(int t){
+	for(int i=0;i<myplayer.size();i++)
+	{
+		myplayer[i].drawstat(myplayer.size(),t);
+	}
+	
+	
+}
 /////////////////////////////////////////////////////////////////////////////////
 void map::spawnitem(){
 	//cout<<"spawnitem\n";
