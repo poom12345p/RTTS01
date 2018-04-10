@@ -6,7 +6,7 @@
 
 using namespace std;
 
-void play(map &mymap){
+int play(map &mymap){
 	int turn=0;
 	int spawnitem =0;
 	char key;
@@ -50,6 +50,11 @@ void play(map &mymap){
 	    		if(mymap.myplayer[i].myturn == turn%mymap.myplayer.size())
 	    		{
 					mymap.myplayer[i].gotopad(rolldice(mymap));
+					if(mymap.myplayer[i].myPad->num == mymap.maxpad)
+					{	
+						return i;
+						Sleep(300);
+					}
 	    			break;
 				}
 	    		
@@ -130,6 +135,13 @@ map cremap(){
 	return map(max,ppl,li,rd);
 }
 
+void winscreen(int w){
+	system("cls");
+	colorit(15);
+	gotoxy(20,2);
+	cout<<"Winner is"<< w+1;
+	getch();
+}
 int main(){
 	srand(time(0));
 	colorit(15);
@@ -140,10 +152,12 @@ int main(){
 		comd =showmeneu();
 		//cout<<comd;
 		if(comd==0){
+			int winner;
 			map mymap =cremap();
 			crechar(mymap);
 			mymap.drawmap();
-			play(mymap);
+			winner = play(mymap);
+			winscreen(winner);
 
 		}
 	}

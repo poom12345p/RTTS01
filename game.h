@@ -19,6 +19,7 @@ position::position(int px=0,int py=0){
 	x=px;
 	y=py;
 }
+void  drawstar(position ,int);
 
 struct linkpad{
 	int Head,Tail;
@@ -252,7 +253,7 @@ void player::gotopad(int n){
 			
 			if(redrawpad->onpadItem != 0)redrawpad->onpadItem->drawitem(posItemPad(redrawpad->ppos));//redraw item(for blocking item fade)
 			if(temppad->onpadItem != 0)temppad->onpadItem->drawitem(posItemPad(temppad->ppos));
-			if(redrawpad->onpadPlay.size() >0){
+			if(redrawpad->onpadPlay.size() >0){//re draw palyer
 				for(int i =0;i<redrawpad->onpadPlay.size();i++)
 				{
 					if(redrawpad->onpadPlay[i]->num != num)
@@ -261,7 +262,7 @@ void player::gotopad(int n){
 					}
 				}
 			}
-			if(temppad->onpadPlay.size() >0){
+			if(temppad->onpadPlay.size() >0){//re draw palyer
 				for(int i =0;i<temppad->onpadPlay.size();i++)
 				{
 					if(temppad->onpadPlay[i]->num != num)
@@ -271,6 +272,9 @@ void player::gotopad(int n){
 					
 				}
 			}
+			if(redrawpad->num == maxpad) drawstar(redrawpad->ppos,0);
+			if(temppad->num == maxpad) drawstar(temppad->ppos,0);
+			
 			
 			if(tdes.y == mypos.y){
 				if(tdes.x > mypos.x )
