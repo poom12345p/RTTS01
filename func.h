@@ -39,6 +39,7 @@ void gotoxy(int x, int y)
   SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 }
 
- void colorit(int col){//12=red, 15=white---------------->this.colorit(12);  this.colorit(15);
+void colorit(int col){//12=red, 15=white---------------->this.colorit(12);  this.colorit(15);
         SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE ), col );
 }
+ 

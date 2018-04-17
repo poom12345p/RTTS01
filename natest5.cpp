@@ -6,6 +6,7 @@
 #include <vector>
 #include "func.h"
 using namespace std;
+void Dice(int d);
 int main()
 {
 	srand(time(0));
@@ -15,6 +16,7 @@ int main()
 	Sleep(100);
 	char c='0';
 	vector<int> dice;
+	int R=0;
 	for(int i=1; i<7 ; i++)
 	{
 		dice.push_back(i);	
@@ -27,7 +29,7 @@ int main()
 	if(i%2==0) psq (32,3);
 	else psq (203,3);	
 	}
-	int R=0;
+	
 	while(c !=32)
 	{
 		gotoxy(6+(R%35),5);
@@ -46,8 +48,8 @@ int main()
 		else psq (203,0.5);
 	    R++;
 	}
+	
 	gotoxy(6,7);
 	cout<< dice[rand()%7+1];
 }
-
 
