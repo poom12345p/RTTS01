@@ -38,95 +38,87 @@ int main()
 }
 
 void Dice(int d)
+//int main()
 {
+{
+//	int d=0;
+//	cin>>d;
 	switch (d)
 	{
-		case 1:
-		for(int i=0; i<25 ;i++)
-		{
-			for(int j=0; j<50;j++)
-			{
-				gotoxy(j+5,i+5);
-				if(i>4&&i<21)
-				{
-					if(j>9&&j<41) psq(192,1);
-					else psq(123,1);
-				}
-				else psq(123,1);	
-			}
-		
-		} break;
-		case 2:
-			for(int i=0; i<25 ;i++)
-			{
-				for(int j=0; j<50;j++)
-				{
-					gotoxy(j+5,i+5);
-					if((i>4&&i<11)||(i>14&&i<21))
+			case 1:
+				for(int i=0;i<10;i++)
 					{
-						if((j>9&&j<21)||(j>29&&j<41)) psq(192,1);
-						else psq(123,1);
-					}
-					else psq(123,1);	
-				}
-		
-			}break;
-		case 3:
-			for(int i=0; i<25 ;i++)
-			{
-				for(int j=0; j<50;j++)
-				{
-					gotoxy(j+5,i+5);
-					if((i>4&&i<11)&&(j>4&&j<16))		psq(192,1);
-					if((i>9&&i<16)&&(j>19&&j<31))	psq(192,1);
-					if((i>14&&i<21)&&(j>34&&j<46))	psq(192,1);
-					else psq(123,1);	
-				}
-			}break;
-		case 4:
-			for(int i=0; i<25 ;i++)
-			{
-				for(int j=0; j<50;j++)
-				{
-					gotoxy(j+5,i+5);
-					if((i>4&&i<11)||(i>14&&i<21))
+						for(int j=0;j<5;j++)
+						{
+							gotoxy(i,j);
+							if(j==2&&(i==4||i==5))
+								psq(192,0.5);
+							else psq(123,0.5);			
+						}
+					}break;
+			case 2:
+				for(int i=0;i<10;i++)
 					{
-						if((j>9&&j<21)||(j>29&&j<41)) psq(192,1);
-						else psq(123,1);
-					}
-					else psq(123,1);	
-				}
-			}break;
-		case 5:
-			for(int i=0; i<25 ;i++)
-			{
-				for(int j=0; j<50;j++)
-				{
-					gotoxy(j+5,i+5);
-					if((i>2&&i<9)&&(j>7&&j<19))	psq(192,1);
-					if((i>2&&i<9)&&(j>31&&j<43))	psq(192,1);
-					if((i>9&&i<16)&&(j>19&&j<31))	psq(192,1);
-					if((i>16&&i<23)&&(j>7&&j<19))	psq(192,1);
-					if((i>16&&i<23)&&(j>31&&j<43))	psq(192,1);
-					else psq(123,1);	
-				}
-			}break;
-		case 6:
-			for(int i=0; i<25 ;i++)
-			{
-				for(int j=0; j<50;j++)
-				{
-					gotoxy(j+5,i+5);
-					if((i>4&&i<11)||(i>14&&i<21))
+						for(int j=0;j<5;j++)
+						{
+							gotoxy(i,j);
+							if(j==2&&(i%4==2||i%4==3))
+								psq(192,0.5);
+							else psq(123,0.5);			
+						}
+					}break;
+			case 3:
+				for(int i=0;i<10;i++)
 					{
-						if((j>4&&j<16)||(j>19&&j<31)||(j>34&&j<46)) psq(192,1);
-						else psq(123,1);
-					}
-					else psq(123,1);	
-				}
-			}break;	
+						for(int j=0;j<5;j++)
+						{
+							gotoxy(i,j);
+							if(j>0&&j<4&&(i/2==j))
+								psq(192,0.5);
+							else psq(123,0.5);			
+						}
+					}break;
+			case 4:
+				for(int i=0;i<10;i++)
+					{
+						for(int j=0;j<5;j++)
+						{
+							gotoxy(i,j);
+							if((j==1||j==3)&&(i%4==2||i%4==3))
+								psq(192,0.5);
+							else psq(123,0.5);			
+						}
+					}break;
+			case 5:
+				for(int i=0;i<10;i++)
+					{
+						for(int j=0;j<5;j++)
+						{
+							gotoxy(i,j);
+							if(j>0&&j<4)
+							{
+								if((j%2==1)&&(i%6==1||i%6==2))
+									psq(192,0.5);
+								else if(j%2==0&&(i%6==4||i%6==5))
+									psq(192,0.5);
+								else psq(123,0.5);				
+							}
+							else psq(123,0.5);
+						}
+					}break;
+			case 6:
+				for(int i=0;i<10;i++)
+					{
+						for(int j=0;j<5;j++)
+						{
+							gotoxy(i,j);
+							if((j==1||j==3)&&(i==1||i==2||i==4||i==5||i==7||i==8))
+								psq(192,0.5);
+							else psq(123,0.5);			
+						}
+					}break;
 	}
-	
+}	
 }
 
 
