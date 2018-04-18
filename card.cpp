@@ -17,7 +17,13 @@ int main()
 		{
 			for(int j=0;j<11;j++)
 			{
-				gotoxy(i+(a*20),j);
+				
+				if(i==8&&j==10)
+				{
+					gotoxy(i+(a*20)+5,11);
+					cout<<a+1;
+				}
+				gotoxy(i+(a*20)+5,j);
 				if((j==2)&&(i>2&&i<13))
 					psq(153,1);
 				else if((j>2&&j<6)&&(i==12||i==11))
@@ -64,6 +70,7 @@ int main()
 			cout<<"Please select 1-4";	
 		}
 	}
+	gotoxy(0,15);
 }
 bool selected(int R)
 {
@@ -77,6 +84,7 @@ bool selected(int R)
 }
 void card(int R,int a)
 {
+	int b=5;
 	switch (R)
 	{
 			case 1:
@@ -84,7 +92,7 @@ void card(int R,int a)
 				{
 					for(int j=0;j<11;j++)
 					{
-						gotoxy(i+a*20,j);
+						gotoxy(i+a*20+b,j);
 						if((j==3||j==2)&&(i==5||i==6))
 							psq(153,1);
 						else if((j>1&&j<9)&&(i==7||i==8||i==9))
@@ -97,7 +105,7 @@ void card(int R,int a)
 				{
 					for(int j=0;j<11;j++)
 					{
-						gotoxy(i+a*20,j);
+						gotoxy(i+a*20+b,j);
 						if((j==3||j==2||(j>4&&j<9))&&(i==5||i==4||i==3))
 							psq(153,1);
 						else if((j==8||j==9||(j>1&&j<7))&&(i==10||i==11||i==12))
@@ -112,7 +120,7 @@ void card(int R,int a)
 				{
 					for(int j=0;j<11;j++)
 					{
-						gotoxy(i+a*20,j);
+						gotoxy(i+a*20+b,j);
 						if((j>1&&j<10)&&(i==10||i==11||i==12))
 							psq(153,1);
 						else if((j==2||j==3||j==5||j==6||j==8||j==9)&&(i>2&&i<13))
@@ -125,7 +133,7 @@ void card(int R,int a)
 				{
 					for(int j=0;j<11;j++)
 					{
-						gotoxy(i+a*20,j);
+						gotoxy(i+a*20+b,j);
 						if((i>2&&i<6)&&(j>1&&j<7))
 							psq(153,1);
 						else if((i>5&&i<10)&&(j==5||j==6))
