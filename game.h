@@ -4,51 +4,44 @@
 #include<string>
 #include<cstring>
 #include "func.h"
+#include "mmsystem.h"
 using namespace std;
 
 class pad;
 class item;
 class player;
 class map;
-class position{
-	public:
-	int x,y;
-	position(int,int);
-};
-position::position(int px=0,int py=0){
-	x=px;
-	y=py;
-}
-void  drawstar(position ,int);
+
+void  drawstar(position);
 
 struct linkpad{
 	int Head,Tail;
 };
 class item{
 	int id;
-	string name;
-	public:
 	//string name;
+	public:
+	string name;
 	char type;
 	int rate;
 	item(int,string);
-	void use(string,player *,pad *);
+	void useme(player *,player *,pad *);
 	void drawitem(position);
 	void upitem();	
 	int randitem();
-	void useme(player* );
 };
+
 item::item(int i,string n){
 	id =i;
 	name = n;
 	if(name =="Sheild") 
 	{
-		rate=15;
+		rate=5;
 		type='S';
 	}
 	else if(name =="Ice") 
 	{
-		rate=10;
+		rate=1;
 		type='T';
 	}
 	else if(name =="Warpscroll")
@@ -70,6 +63,8 @@ void creitem(){
 	}
 	
 }
+///////////////////////////////////////////////////////////////////////
+
 ///////////////////////////////////////////////////////////////////////
 position posItemPad(position p){
 	return position(p.x+8,p.y-3);
@@ -124,9 +119,6 @@ void item::drawitem(position p){
 	//gotoxy(0,0);
 }
 //////////////////////////////////////////////////////////////////
-void useme(player* target){
-	
-}
 //////////////////////////////////////////////////////////////////
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 /////////////////////////////////////////////////////////////////
@@ -145,7 +137,7 @@ class pad{
 	void drawpad(int);
 	void uppad(int,int);
 	void removeItem();
-	void reOnPlayer();
+	//void reOnPlayer();w
 
 };
 /////////////////////////////////////////////////////////////////
@@ -166,10 +158,19 @@ pad::pad(int n,int l,char t,int x,int y,int go){
 class player{
 	string name;
 	int color;
-	int num;
 	position statpos;
+	
+	public:
 	int maxpad;
-	public:////////////
+	int num;
+		//////status//////
+	bool walk;
+	bool walkdrt;
+	bool uitem;
+	int protect;
+	bool rand;
+	
+	//////////////////
 	position mypos;
 	int no;
 	pad *myPad;
@@ -177,13 +178,14 @@ class player{
 	int myturn;
 	//position pos;
 	player(int,string,int,pad *,int);
-	void drawme();
+	void drawme(int,int);
 	void drawstat(int,int);
 	void gotopad(int);
 	void ladsnakto(pad *);
 	void getitem(item *);
 	void useitem(int,map &);
 	player* chtarget(map &);
+	void reset();
 };
 //////////////////////////////////////////////////
 player::player(int n,string na,int c,pad *p,int mp){
@@ -191,13 +193,20 @@ player::player(int n,string na,int c,pad *p,int mp){
 	num=n;
 	no=1;
 	myPad = p;
+	myPad->onpadPlay.push_back(this);
 	//myturn=0;
 	color=c;
 	mypos.x=myPad->pos.x+2+((num-1)*4);
 	mypos.y=myPad->pos.y-2;
-	statpos.y = myPad->pos.y+3;
-	statpos.x = myPad->pos.x+(30*(num-1));
+	statpos.y = myPad->pos.y+6;
+	statpos.x = 20+(30*(num-1));
 	maxpad=mp;
+	
+	walk= true;
+	walkdrt= true;//true ++ / false --
+	uitem= true;
+	protect = 0;
+	rand =true;
 
 }
 /////////////////////////////////////////////////////////////////
@@ -221,37 +230,73 @@ void player::getitem(item * t=0){
 	drawstat(-1,-1);
 }
 /////////////////////////////////////////////////////////////////
-void player::drawme(){
+void player::drawme(int x=0,int y=0){
+	if(x==0 && y==0)
+	{
 	gotoxy(mypos.x,mypos.y);
 	psq(color,1);
 	gotoxy(mypos.x,mypos.y-1);
 	psq(240,1);
 	gotoxy(mypos.x,mypos.y-2);
+	if(protect>0)colorit(11);
 	cout<<"P"<<num;
+	colorit(15);
+		if( !walk && !uitem)
+		{
+			gotoxy(mypos.x,mypos.y);
+			psq(176,1);
+			gotoxy(mypos.x,mypos.y-1);
+			psq(176,1);	
+		}
+	}
+	else
+	{
+		gotoxy(x,y);
+		psq(color,1);
+		gotoxy(x,y-1);
+		psq(240,1);
+		gotoxy(x,y-2);
+		cout<<"P"<<num;
+		
+		
+	}
 	//gotoxy(0,0);
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void player::drawstat(int p=-1,int t=-1){
-	if(p !=-1 && t !=-1){
-	
-		gotoxy(statpos.x,statpos.y-1);
-		cout<<myturn<<" ";
-		if(t%p == myturn) cout<<"Your turn";
-		else if((t+1)%p == myturn) cout<<"Next";
-		else cout<<"            ";
-	}
 	gotoxy(statpos.x,statpos.y);
-	psq(240,1);
-	cout <<" "<<"P"<<num<<": "<<name;
+	cout <<"   "<<"P"<<num<<": "<<name;
 	gotoxy(statpos.x,statpos.y+1);
-	psq(color,1);
-	cout<<" ";
+	cout<<"   ";
 	if(no == 1)cout<<"1st";
 	else if(no == 2)cout<<"2nd";
 	else if(no == 3)cout<<"3rd";
 	else if(no == 4)cout<<"4th";
 	cout<<"(pad: "<<myPad->num<<")";
+	drawme(statpos.x,statpos.y+1);
+	if(p !=-1 && t !=-1){
 	
+		gotoxy(statpos.x,statpos.y-2);
+		//cout<<myturn<<" ";
+		if(t%p == myturn) cout<<"Your turn";
+		else if((t+1)%p == myturn) cout<<"Next";
+		else cout<<"            ";
+	}
+	//draw stat buff de buff
+	gotoxy(statpos.x,statpos.y+2);
+	cout<<"           ";
+	gotoxy(statpos.x,statpos.y+2);
+	if( !walk && !uitem)
+	{
+		colorit (15);
+		cout<<"I ";
+	}
+	if( protect<0)
+	{
+		colorit (11);
+		cout<<"P ";
+	}
+	colorit (15);
 	///draw myitem
 	gotoxy(statpos.x+2,statpos.y+3);
 	cout<<"<ITEM>";
@@ -360,6 +405,7 @@ void player::ladsnakto(pad *despad){
 	/////move////////////////////////////
 	///y axis////
 	int i=0;
+	//if( despad->pos.y-myPad->pos.y >0)PlaySound(TEXT("snake.wav"),NULL,SND_SYNC);
 	while(mypos.y != tdes.y)
 	{
 		///delete old//////
@@ -537,23 +583,30 @@ void player::ladsnakto(pad *despad){
 	}
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void randomevent(position &,player*);
 void player::gotopad(int n){
+
+	bool walkdirec =true;//true = go upper +,flase = go back - 
+	if(n<0) walkdirec =false;
 	pad * temppad = myPad;
-	if(myPad->num+n <= maxpad) myPad = myPad+n;
-	
-	else{
-		n= maxpad-(myPad->num+n);
-		myPad =myPad+(maxpad-myPad->num);
+	if(n<0 && myPad->num+n <1) myPad = myPad+1-myPad->num;
+	else
+	{
+		if(myPad->num+n <= maxpad) myPad = myPad+n;
+		else{
+			n= maxpad-(myPad->num+n);
+			myPad =myPad+(maxpad-myPad->num);
+		}
 	}
 	position des(myPad->pos.x+2+((num-1)*4),myPad->pos.y-2);
 	
-	bool walkdirec =true;//true = go upper +,flase = go back - 
 	/*if(temppad->num == maxpad && n<0)
 	{
 		walkdirec=false;
 		myPad = myPad+n;
 		des =position(myPad->pos.x+2+((num-1)*4),myPad->pos.y-2);
 	}*/
+	
 	while(temppad != myPad)
 	{
 
@@ -594,8 +647,8 @@ void player::gotopad(int n){
 					
 				}
 			}
-			if(redrawpad->num == maxpad) drawstar(redrawpad->pos,0);
-			if(temppad->num == maxpad) drawstar(temppad->pos,0);
+			if(redrawpad->num == maxpad) drawstar(redrawpad->pos);
+			if(temppad->num == maxpad) drawstar(temppad->pos);
 			
 			
 			if(tdes.y == mypos.y){
@@ -621,6 +674,7 @@ void player::gotopad(int n){
 				myPad = myPad+n;
 				des =position(myPad->pos.x+2+((num-1)*4),myPad->pos.y-2);
 			}
+			//PlaySound(TEXT("walk.wav"),NULL,SND_SYNC);
 			Sleep(25);
 		}
 
@@ -633,6 +687,10 @@ void player::gotopad(int n){
 		myPad=temp;
 	}
 	getitem(0);
+	if(myPad->type =='R' && rand){
+	position randpos(140,statpos.y);
+	randomevent(randpos,this);
+	}
 	drawme();
 	/*mypos.x=myPad->pos.x+2+((num-1)*4);
 	mypos.y=myPad->pos.y-2;*/
@@ -641,24 +699,31 @@ void player::gotopad(int n){
 void player::useitem(int i,map & m){
 	if(	myitem.size() >=i)
 	{
-		player* p=0;
+		player* p=this;
 		if(myitem[i-1]->type == 'T') 
 		{			
 			p = chtarget(m);
 		} 
-		//myitem[i]->use(p);
+		myitem[i-1]->useme(p,this,myPad);
 		myitem.erase(myitem.begin()+i-1);
 		drawstat();
 	}
 }
 
 ///////////////////////////////////////////////////////////////////////////
-void pad::reOnPlayer(){
+/*void pad::reOnPlayer(){
 	while(onpadPlay.size()>0){
 		onpadPlay.erase(onpadPlay.begin());
 	}
-}
+}*/
 ///////////////////////////////////////////////////////////////////////
+void player::reset(){
+	walk= true;
+	walkdrt= true;
+	uitem = true;
+	if(protect >0)protect--;
+	rand =true;
+}
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////////////////
@@ -690,10 +755,9 @@ int pad::posY(){
 	return pos.y;
 }*/
 /////////////////////////////////////////////////////////////////
-void drawstar(position p, int f=0)
+void drawstar(position p)
 {
-	if(f%2==0)
-	{
+	
 		gotoxy(p.x+4,p.y-6);
 		psq(239,1);
 		gotoxy(p.x+8,p.y-6);
@@ -720,36 +784,7 @@ void drawstar(position p, int f=0)
 		psq(0,1);
 		gotoxy(p.x+12,p.y-2);
 		psq(239,1);
-	}
-	else
-	{
-		gotoxy(p.x+4,p.y-6);
-		psq(0,1);
-		gotoxy(p.x+8,p.y-6);
-		psq(239,1);
-		gotoxy(p.x+12,p.y-6);
-		psq(0,1);
-		gotoxy(p.x+6,p.y-5);
-		psq(240,1);
-		psq(239,1);
-		psq(240,1);
-		gotoxy(p.x+4,p.y-4);
-		psq(239,2);
-		psq(240,1);
-		psq(239,2);
 
-		gotoxy(p.x+6,p.y-3);
-		psq(240,1);
-		psq(239,1);
-		psq(240,1);
-		gotoxy(p.x+4,p.y-2);
-		psq(0,1);
-		gotoxy(p.x+8,p.y-2);
-		psq(239,1);
-		gotoxy(p.x+12,p.y-2);
-		psq(0,1);
-		
-	}
 }
 /////////////////////////////////////////////////////////////////
 void pad::drawpad(int last=0){
@@ -813,7 +848,7 @@ void pad::drawpad(int last=0){
 		cout<<"   ";
 	}
 		if(num==last){
-		drawstar(pos,0);
+		drawstar(pos);
 		
 		gotoxy(pos.x+6,pos.y);
 		colorit(pcl);
@@ -821,11 +856,12 @@ void pad::drawpad(int last=0){
 		colorit(15);
 		
 	}
-	for(int i =0;i<onpadPlay.size();i++)
+
+	//cout<< onpadPlay.size();
+	/*for(int i =0;i<onpadPlay.size();i++)
 	{
-			onpadPlay[i]->drawme();
-					
-	}
+			onpadPlay[i]->drawme();			
+	}*/
 			
 	
 }
@@ -886,7 +922,7 @@ map::map(int mp,int pl,int l,int crp){
 		
 		if(level%2==0) pX = 18*(i%PPL);
 		else pX=18*((PPL-1)-(i%PPL));
-		pX +=(int)((230-(18*PPL))/2);
+		pX +=(int)((250-(18*PPL))/2);//
 		
 		pY = (7*((maxpad-(maxpad%PPL))/PPL+1))-(7*level);//set position of map
 		int go=0;
@@ -920,7 +956,7 @@ map::map(int mp,int pl,int l,int crp){
 		
 	}
 	creitem();
-	padgetPlay();
+	//padgetPlay();
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////
 void map::drawmap(){
@@ -971,10 +1007,28 @@ void map::drawmap(){
 		myplayer[i].drawme();
 		myplayer[i].drawstat(myplayer.size(),0);
 	}
+	gotoxy(0,pads[0].pos.y+1);//draw surface
+	psq(160,125);
+	gotoxy(0,pads[0].pos.y+2);
+	psq(64,125);
+/////////drawwall/////////
+	for(int i=pads[0].pos.y;i>pads[maxpad-1].pos.y;i--)
+	{
+		gotoxy(pads[0].pos.x-4,i);
+		if(i%2==0)psq(112,1);
+		else psq(128,1);
+	}
+
+	for(int i=pads[0].pos.y;i>pads[maxpad-1].pos.y;i--)
+	{
+		gotoxy(pads[PPL-1].pos.x+20,i);
+		if(i%2==0)psq(112,1);
+		else psq(128,1);
+	}
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
-void map::update(){
+/*void map::update(){
 		//pad's animation
 		int rate=300;//frame rate
 		for(int i =0;i<maxpad;i++)
@@ -989,17 +1043,49 @@ void map::update(){
 		frame = frame%8;
 		gotoxy(0,0);
 
-}
+}*/
 /////////////////////////////////////////////////////////////////////////////////
 void map::padgetPlay(){
 	for(int i=0;i<pads.size();i++)
 	{
-		pads[i].reOnPlayer();
+
+		pads[i].onpadPlay.clear();
 	}
 	for(int i=0;i<myplayer.size();i++)
 	{
 		myplayer[i].myPad->onpadPlay.push_back(&myplayer[i]);
 	}
+
+	vector<player*> odp;
+	for(int i=0;i<myplayer.size();i++)
+	{
+		odp.push_back(&myplayer[i]);
+	}
+	int count=1;
+	int omax;
+	//int max = 0;
+	for(int i=0;i<myplayer.size();i++)
+	{
+		int loc =0;
+		int max = odp[0]->myPad->num;
+		
+		for(int j=0;j<odp.size();j++)
+		{
+			if(odp[j]->myPad->num >max )
+			{
+				loc=j;
+				max = odp[j]->myPad->num;
+			
+			}
+		}	
+		if(max==omax) count--;;
+		odp[loc]->no = count;
+		omax =max;
+		odp.erase(odp.begin()+loc);
+		count++;
+
+	}
+	
 }
 /////////////////////////////////////////////////////////////////////////////////
 void map::upPlayStat(int t){
@@ -1007,10 +1093,9 @@ void map::upPlayStat(int t){
 	{
 		myplayer[i].drawstat(myplayer.size(),t);
 	}
-	
-	
+
 }
-/////////////////////////////////////////////////////////////////////////////////
+
 void map::spawnitem(){
 	//cout<<"spawnitem\n";
 	vector<int> numpad;//get pad that empty(ready for push item in)
@@ -1036,20 +1121,22 @@ void map::spawnitem(){
 		}
 }
 //////////////////////////////////////////////////////////////////////////
-void pad::uppad(int f,int last =0){
+
+//////////////////////////////////////////////////////////////////////////
+//void pad::uppad(int f,int last =0){
 	
-	if(num == last)
+/*	if(num == last)
 	{
-		drawstar(pos,f);
+		drawstar(pos);
 	}
 	/*if(onpadItem != 0)
 	{
 		//cout<<num<<"\n";
 		onpadItem->drawitem(posItemPad(pos));
-	}*/
-}
+	}
+}*/
 
-//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void pad::spawnitem(int id){
 	//cout<<"pawnitem\n";
 	onpadItem = &itemlist[id];
@@ -1070,40 +1157,206 @@ void pad::spawnitem(int id){
 	onpadItem->drawitem(p);
 	//cout<<"pawnitem\n";
 }
-//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void drawDice(int d,position p)
+{
+	switch (d)
+	{
+			case 0:
+					for(int i=0;i<10;i++)
+						{
+							for(int j=0;j<5;j++)
+							{
+								gotoxy(p.x+i,p.y+j);
+									psq(0,0.5);			
+							}
+						}
+						break;
+			case 1:
+				for(int i=0;i<10;i++)
+					{
+						for(int j=0;j<5;j++)
+						{
+							gotoxy(p.x+i,p.y+j);
+							if(j==2&&(i==4||i==5))
+								psq(192,0.5);
+							else psq(123,0.5);			
+						}
+					}
+					break;
+			case 2:
+				for(int i=0;i<10;i++)
+					{
+						for(int j=0;j<5;j++)
+						{
+							gotoxy(p.x+i,p.y+j);
+							if(j==2&&(i%4==2||i%4==3))
+								psq(192,0.5);
+							else psq(123,0.5);			
+						}
+					}break;
+			case 3:
+				for(int i=0;i<10;i++)
+					{
+						for(int j=0;j<5;j++)
+						{
+							gotoxy(p.x+i,p.y+j);
+							if(j>0&&j<4&&(i/2==j))
+								psq(192,0.5);
+							else psq(123,0.5);			
+						}
+					}
+					break;
+			case 4:
+				for(int i=0;i<10;i++)
+					{
+						for(int j=0;j<5;j++)
+						{
+							gotoxy(p.x+i,p.y+j);
+							if((j==1||j==3)&&(i%4==2||i%4==3))
+								psq(192,0.5);
+							else psq(123,0.5);			
+						}
+					}
+					break;
+			case 5:
+				for(int i=0;i<10;i++)
+					{
+						for(int j=0;j<5;j++)
+						{
+							gotoxy(p.x+i,p.y+j);
+							if(j>0&&j<4)
+							{
+								if((j%2==1)&&(i%6==1||i%6==2))
+									psq(192,0.5);
+								else if(j%2==0&&(i%6==4||i%6==5))
+									psq(192,0.5);
+								else psq(123,0.5);				
+							}
+							else psq(123,0.5);
+						}
+					}
+					break;
+			case 6:
+				for(int i=0;i<10;i++)
+					{
+						for(int j=0;j<5;j++)
+						{
+							gotoxy(p.x+i,p.y+j);
+							if((j==1||j==3)&&(i==1||i==2||i==4||i==5||i==7||i==8))
+								psq(192,0.5);
+							else psq(123,0.5);			
+						}
+					}
+					break;
+	}
+
+} 
 int rolldice(map & m){
 	
 	position p= m.pads[0].pos;
-	p.y= p.y+10;
+	p.x=140;
+	p.y= p.y+4;
 	int dice;
 	int c=getch();
+			////god mode////
 	switch (c)
 	{
 		case 32:
-			dice= (rand()%6)+1;
+			//dice= (rand()%6)+1;
 			break;
 		case 113:
-			dice= 1;
+			return 1;
 			break;
 		case 119:
-			dice= 2;
+			return 2;
 			break;
 		case 101:
-			dice= 3;
+			return 3;
 			break;
 		case 114:
-			dice= 4;
+			return 4;
 			break;
 		case 116:
-			dice= 5;
+			return 5;
 			break;
 		case 121:
-			dice= 6;
+			return 6;
 			break;
 	}
+		////god mode////
+	 c='0';
+	vector<int> dicelist;
+	int R=0;
+	for(int i=1; i<7 ; i++)
+	{
+		dicelist.push_back(i);	
+	}	
+	for(int i=1;i<7;i++)
+	{
+		gotoxy(6*i+p.x+2,p.y);//number
+	   	cout <<i;
+	   	gotoxy(6*i+p.x,p.y+1);//cloar bar
+		if(i%2==0) psq (32,3);
+		else psq (203,3);	
+	}
+	
+	PlaySound(TEXT("sound/dice.wav"),NULL,SND_SYNC);
+		while(c !=32)
+	{
+		gotoxy(6+(R%35)+p.x,p.y+1);
+		psq(224,0.5);	        
+	    Sleep(20);
+		if (_kbhit()==1)
+	    {	
+			c=getch();
+			if(c==32)break;
+	    }
+	    gotoxy(6+(R%35)+p.x,p.y+1);
+		if((1+(R%35)/6)%2==0) psq (32,0.5);
+		else psq (203,0.5);
+	    R++;
+	    
+	}
+		gotoxy(6+(R%35)+p.x,p.y+1);
+	    psq(245,0.5);
+	    for(int i=0;i<5;i++)//increaces rate
+	    {
+			dicelist.push_back((R%35)/6+1);
+		}
+		
+	//gotoxy(p.x,p.y+3);
+	dice= dicelist[rand()%dicelist.size()];
+	PlaySound(TEXT("sound/dice.wav"),NULL,SND_SYNC);
+	for(int i=20;i<=300;i+=20)
+	{
+		drawDice(((i-20)/20)%6+1,position(p.x+20,p.y+5));
+		Sleep(i);
+			
+		if(i==300)
+		{
+			
+			int j=0;
+			while(((i+j-20)/20)%6+1 !=dice){
+				j+=20;
+				drawDice(((i+j-20)/20)%6+1,position(p.x+20,p.y+5));
+				if(((i+j-20)/20)%6+1 == dice)PlaySound(TEXT("sound/dice.wav"),NULL,SND_SYNC);
+				Sleep(i+j);
+			}
+		}
+	}
+	
+	Sleep(800);
+	drawDice(0,position(p.x+20,p.y+5));
 
+	//cout<< dice;
+	//pd
+	///clean////
 	gotoxy(p.x,p.y);
-	cout<< dice;
+	psq(0,21);
+	gotoxy(p.x,p.y+1);
+	psq(0,21);
+	
 	return dice;
 	
 }
@@ -1111,17 +1364,290 @@ int rolldice(map & m){
 player* player::chtarget(map & m)
 {
 	position p= m.pads[0].pos;
-	p.y= p.y+10;
+	p.y= p.y+4;
+	p.x = 140;
 	vector<player*> plist;
 	for(int i=0;i<m.myplayer.size();i++)
 	{
-		//if(m.myplayer[i].num != num) 
+		if(m.myplayer[i].num != num && m.myplayer[i].protect ==0) 
 		plist.push_back(&m.myplayer[i]);
 	}
 		for(int i=0;i<plist.size();i++)
 	{
-		gotoxy(p.x+(i*3),p.y+2);
-		plist[i]->drawme();
+		plist[i]->drawme(p.x+(i*6),p.y+6);
 	}
-	return plist[0];
+	
+	int ch=0;
+	char comd;
+	while(comd !=13)
+	{
+		for(int i=0;i<plist.size();i++)
+		{
+			gotoxy(p.x+(i*6),p.y+3);
+			colorit(12);
+			cout<<" ";
+			colorit(15);
+		}
+		gotoxy(p.x+(ch*6),p.y+3);
+		colorit(12);
+		cout<<"v";
+		colorit(15);
+		comd=getch();
+		if(comd =='a')ch--;
+		else if(comd == 'd')ch++;
+			PlaySound(TEXT("sound/menu.wav"),NULL,SND_SYNC);
+		ch= (plist.size()+ch)%plist.size();
+		
+	}
+	/////clr screen//////
+	for(int i=0;i<plist.size();i++)
+		{
+			for(int j=0;j<3;j++)
+			{
+			gotoxy(p.x+(i*6),p.y+j);
+			colorit(12);
+			cout<<"  ";
+			colorit(15);
+			}
+		}
+		
+	for(int j=0;j<4;j++)
+	{
+		gotoxy(p.x,p.y+3+j);
+		psq(0,21);
+	}
+
+	return plist[ch];
 }
+///////////////////////////////////////////////////////////////////////////////	
+void item::useme(player *tar,player*me,pad*p )
+{ 	
+
+	if(this->name =="Sheild") 
+	{
+		for(int i=0;i< 3;i++)
+		{
+			gotoxy(me->mypos.x,me->mypos.y);
+			psq(162,1);
+			gotoxy(me->mypos.x,me->mypos.y-1);
+			psq(162,1);
+
+			Sleep(200);
+			gotoxy(me->mypos.x,me->mypos.y);
+			psq(0,1);
+			gotoxy(me->mypos.x,me->mypos.y-1);
+			psq(0,1);
+			me->drawme();
+			Sleep(200);
+		}
+		me->protect += 2;
+			PlaySound(TEXT("sound/shield.wav"),NULL,SND_SYNC);
+	}
+	else if(this->name =="Ice") 
+	{
+		tar->walk = false;
+		tar->uitem = false;
+		PlaySound(TEXT("sound/ice.wav"),NULL,SND_SYNC);
+
+	}
+	else if(this->name =="Warpscroll")
+	{
+		gotoxy(0,0);
+		cout<<"a ";
+		position tPos = me->mypos;
+		pad * tPad = me->myPad;
+		cout<<"b ";
+		me->mypos.x = tar->mypos.x;
+		me->mypos.y = tar->mypos.y;
+		cout<<"c ";
+		tar->mypos.x =  tPos.x;
+		tar->mypos.y =  tPos.y;
+		me->myPad = tar->myPad;
+		tar->myPad = tPad;
+		for(int i=0;i< 3;i++)
+		{
+			gotoxy(me->mypos.x,me->mypos.y);
+			psq(240,1);
+			gotoxy(me->mypos.x,me->mypos.y-1);
+			psq(240,1);
+			gotoxy(tar->mypos.x,tar->mypos.y);
+			psq(240,1);
+			gotoxy(tar->mypos.x,tar->mypos.y-1);
+			psq(240,1);
+			Sleep(200);
+			gotoxy(me->mypos.x,me->mypos.y);
+			psq(0,1);
+			gotoxy(me->mypos.x,me->mypos.y-1);
+			psq(0,1);
+			gotoxy(tar->mypos.x,tar->mypos.y);
+			psq(0,1);
+			gotoxy(tar->mypos.x,tar->mypos.y-1);
+			psq(0,1);
+			Sleep(200);
+		}
+		
+		player* tplay;
+		for(int i=0;i<2;i++)
+		{
+			if(i==0)tplay = me;
+			else if(i ==1)tplay = tar;
+			position des(tplay->myPad->pos.x+2+((tplay->num-1)*4),tplay->myPad->pos.y-2);
+			while(tplay->mypos.x != des.x)
+			{
+				//delete old
+				gotoxy(tplay->mypos.x,tplay->mypos.y);
+				psq(0,1);
+				gotoxy(tplay->mypos.x,tplay->mypos.y-1);
+				psq(0,1);
+				gotoxy(tplay->mypos.x,tplay->mypos.y-2);
+				psq(0,1);
+				//delete old
+				
+				if(tplay->myPad->onpadItem != 0)tplay->myPad->onpadItem->drawitem(posItemPad(tplay->myPad->pos));//redraw item(for blocking item fade)
+				if(tplay->myPad->onpadPlay.size() >0){//re draw palyer
+					for(int i =0;i<me->myPad->onpadPlay.size();i++)
+					{
+						if(tplay->myPad->onpadPlay[i]->num != tplay->num)
+						{
+							tplay->myPad->onpadPlay[i]->drawme();
+						}
+					}
+				}
+				if(tplay->mypos.x > des.x)tplay->mypos.x--;
+				else tplay->mypos.x++;
+				tplay->drawme();
+				Sleep(25);
+			}
+		}
+
+	} 
+
+	tar->drawme();
+	me->drawme();
+	tar->drawstat();
+	me->drawstat();
+	
+}
+void drawevent(position &p,int x){
+	for(int i =0;i<5;i++){
+		gotoxy(p.x,p.y+i);
+		psq(0,5);
+	}
+	switch(x)
+	{
+		case 0://clear
+			for(int i =0;i<5;i++)
+			{
+			gotoxy(p.x,p.y+i);
+			psq(0,5);
+			}
+		break;
+		case 1://>
+			
+			gotoxy(p.x+2,p.y);
+			psq(160,1);
+			gotoxy(p.x+4,p.y+1);
+			psq(160,1);
+			gotoxy(p.x+6,p.y+2);
+			psq(160,1);
+			gotoxy(p.x+4,p.y+3);
+			psq(160,1);
+			gotoxy(p.x+2,p.y+4);
+			psq(160,1);
+			break;
+		case 2://<
+			gotoxy(p.x+6,p.y);
+			psq(192,1);
+			gotoxy(p.x+4,p.y+1);
+			psq(192,1);
+			gotoxy(p.x+2,p.y+2);
+			psq(192,1);
+			gotoxy(p.x+4,p.y+3);
+			psq(192,1);
+			gotoxy(p.x+6,p.y+4);
+			psq(192,1);
+			break;
+		case 3://s
+			gotoxy(p.x+2,p.y);
+			psq(32,3);
+			gotoxy(p.x+2,p.y+1);
+			psq(32,1);
+			gotoxy(p.x+2,p.y+2);
+			psq(32,3);
+			gotoxy(p.x+6,p.y+3);
+			psq(32,1);
+			gotoxy(p.x+2,p.y+4);
+			psq(32,3);
+			break;
+		case 4://l
+			gotoxy(p.x+2,p.y);
+			psq(240,1);
+			gotoxy(p.x+2,p.y+1);
+			psq(240,1);
+			gotoxy(p.x+2,p.y+2);
+			psq(240,1);
+			gotoxy(p.x+2,p.y+3);
+			psq(240,1);
+			gotoxy(p.x+2,p.y+4);
+			psq(240,3);
+			break;
+			break;
+	}
+	
+}
+
+void randomevent(position &p,player*me){
+	int j =0,i;
+	me->rand = false;
+		while(true)
+		{
+			i=(j%4)+1;
+			if (_kbhit()==1)
+	    	{	
+				if(getch()==13)break;
+	    	}
+	    	drawevent(p,i);
+	    	Sleep(500);
+	    	j++;
+	    	j=j%4;
+		}
+		drawevent(p,i);
+	pad* temp;
+	switch(i)
+	{
+		case 1:
+		me->gotopad(rand()%10);
+		break;
+		
+		case 2:
+		me->gotopad(-(rand()%10));
+		break;
+		
+		case 4:
+		temp = me->myPad;
+		if(temp->num < me->maxpad)temp++;
+		while(temp->pos.x!= me->myPad->pos.x &&temp->num < me->maxpad-1)
+		{
+			temp++;
+		}
+		if(temp->pos.y!= me->myPad->pos.y)me->ladsnakto(temp);
+		break;
+		
+		case 3:
+		temp = me->myPad;
+		if(temp->num < me->maxpad)temp--;
+		while(temp->pos.x != me->myPad->pos.x &&temp->num>1)
+		{
+			temp--;
+		}
+		if(temp->pos.y!= me->myPad->pos.y)me->ladsnakto(temp);
+		break;
+		
+	}
+	Sleep(1000);
+	drawevent(p,0);
+}
+
+
+
+

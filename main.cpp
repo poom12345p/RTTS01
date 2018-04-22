@@ -40,18 +40,7 @@ int play(map &mymap){
 	    	mymap.spawnitem();
 	    	spawnitem =false;
 		}
-	/*	if(turn %4==0 && spawnitem !=2){
-			spawnitem =1;
-		}
-		else if(spawnitem ==2 &&turn %4!=0)
-		{
-			spawnitem =0;
-		}
-		if(spawnitem ==1)
-	    {
-	    	mymap.spawnitem();
-	    	spawnitem++;
-		}*/
+
 		///////////////////////////////////////////////////////////////////////////
 		
 		/*if (_kbhit()==1)////////////animation
@@ -59,10 +48,8 @@ int play(map &mymap){
 	        key=getch();
 	    }*/
 	    int act =2;
-	    bool walk=true;
-	    bool item=true;
 	    int play;
-	    mymap.padgetPlay();
+	    //mymap.padgetPlay();
 	    mymap.upPlayStat(turn);
 	    	for(int i=0;i<mymap.myplayer.size();i++)
 		    {
@@ -76,12 +63,19 @@ int play(map &mymap){
 	    	{
 	    		act--;
 			}
+			else if(!mymap.myplayer[play].uitem)
+			{
+				act--;
+			}
+			
+			if(!mymap.myplayer[play].walk)act--;
+	
 	    while(act != 0)
 	    {
 	    	
 	    	key=getch();
 	    	
-		    if(key ==32 && walk)/////sapce bar rolldice
+		    if(key ==32 && mymap.myplayer[play].walk)/////sapce bar rolldice
 		    { 	
 		    	
 				mymap.myplayer[play].gotopad(rolldice(mymap));
@@ -95,12 +89,15 @@ int play(map &mymap){
 		    	mymap.padgetPlay();
 		    	key =0;
 		    	act--;
-		    	walk=false;
+		    	mymap.myplayer[play].walk=false;
+		    	continue;
+		    	
 		    }
-		    if(!walk && key == 32)break;
+		    
+		    if(!mymap.myplayer[play].walk && key == 32)break;
 
 		    int u = atoi(&key);
-		    if(item &&mymap.myplayer[play].myitem.size() > 0 && u<=4 && u>0)
+		    if(mymap.myplayer[play].uitem &&mymap.myplayer[play].myitem.size() > 0 && u<=4 && u>0 )//useitem
 		    {
 
 		    	if(mymap.myplayer[play].myitem.size() >=u)
@@ -108,21 +105,23 @@ int play(map &mymap){
 		    		mymap.myplayer[play].useitem(u,mymap);
 				}
 				act--;
+				mymap.myplayer[play].uitem  = false;
+				mymap.padgetPlay();
 			}
-		
+			
 		}
-		
+		mymap.myplayer[play].reset();
 		turn++;
-		gotoxy(0,0);
-		cout << turn;
+		//gotoxy(0,0);
+		//cout << turn;
 	   //mymap.update();
 	}
 }
 void crechar(map &mymap){
 	mymap.myplayer.push_back(player(1,"P1",192,&mymap.pads[0],mymap.maxpad));
 	mymap.myplayer.push_back(player(2,"P2",16,&mymap.pads[0],mymap.maxpad));
-	//mymap.myplayer.push_back(player(3,"P3",208,&mymap.pads[0],mymap.maxpad));
-	//mymap.myplayer.push_back(player(4,"P4",160,&mymap.pads[0],mymap.maxpad));
+	mymap.myplayer.push_back(player(3,"P3",208,&mymap.pads[0],mymap.maxpad));
+	mymap.myplayer.push_back(player(4,"P4",160,&mymap.pads[0],mymap.maxpad));
 }
 
 int showmeneu(){
@@ -162,6 +161,7 @@ int showmeneu(){
 		colorit(15);
 		gotoxy(0,0);
 		comd = getch();
+		PlaySound(TEXT("sound/menu.wav"),NULL,SND_SYNC);
 		if(comd =='w')chosse--;
 		else if(comd == 's')chosse++;
 		//cout<<comd;
