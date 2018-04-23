@@ -11,7 +11,7 @@ position::position(int px=0,int py=0){
 	x=px;
 	y=py;
 }
-void SetWindow(int Width, int Height)//don,t care//set window size
+void SetWindow(int Width, int Height)//set window size
     {
     _COORD coord;
     coord.X = Width;

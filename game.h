@@ -3,6 +3,7 @@
 #include<vector>
 #include<string>
 #include<cstring>
+#include<iomanip>
 #include "func.h"
 #include "mmsystem.h"
 using namespace std;
@@ -41,19 +42,54 @@ item::item(int i,string n){
 	}
 	else if(name =="Ice") 
 	{
-		rate=1;
+		rate=3;
 		type='T';
 	}
 	else if(name =="Warpscroll")
 	{
-		rate=5;
+		rate=3;
 		type='T';
 	} 
+	else if(name =="Lock")
+	{
+		rate=6;
+		type='T';
+	} 
+	else if(name =="Block")
+	{
+		rate=6;
+		type='T';
+	} 
+	else if(name =="Double")
+	{
+		rate=4;
+		type='S';
+	} 
+	else if(name =="Mug")
+	{
+		rate=6;
+		type='T';
+	} 
+	else if(name =="Trap")
+	{
+		rate=5;
+		type='P';
+	} 
+	else if(name =="Fortune")
+	{
+		rate=4;
+		type='S';
+	}
+	else if(name =="Reverse")
+	{
+		rate=4;
+		type='T';
+	}
 	
 }
 /////////////////////////////////////////////////////////////////
 //-------------------------------------------------------------------------------------------ITEM-------------------------------------------------------------------------------------------//
-string itemNameList[]={"Sheild","Ice","Warpscroll"};
+string itemNameList[]={"Sheild","Ice","Warpscroll","Lock","Block","Double","Mug","Trap","Fortune","Reverse"};
 vector<item> itemlist;
 void creitem(){
 	for(int i=0;i< sizeof(itemNameList)/sizeof(itemNameList[0]) ;i++)
@@ -116,6 +152,60 @@ void item::drawitem(position p){
 		cout<<">";
 		colorit(15);
 	}
+	else if(name =="Lock"){
+	
+		psq(252,0.5,'X');
+		colorit(12);
+		psq(124,0.5,'I');
+		colorit(15);
+		psq(252,0.5,'X');
+	}
+	else if(name =="Block"){
+	
+		psq(252,0.5,'X');
+		colorit(12);
+		psq(124,0.5,'W');
+		colorit(15);
+		psq(252,0.5,'X');
+	}
+	else if(name =="Double"){
+		colorit(10);
+		cout<<">>>";
+		colorit(15);
+
+	}
+	else if(name =="Mug"){
+	
+		psq(64,0.5);
+		psq(4,0.5,'M');
+		psq(64,0.5);
+	}
+	else if(name =="Trap"){
+		colorit(12);
+		cout<<"[";
+		colorit(2);
+		cout<<"T";
+		colorit(12);
+		cout<<"]";	
+		colorit(15);
+	
+	}
+	else if(name =="Fortune"){
+	
+		psq(224,0.5);
+		colorit(14);
+		cout<<"F";
+		colorit(15);
+		psq(224,0.5);
+	}
+	else if(name =="Reverse"){
+	
+		colorit(12);
+		cout<<"<<<";
+		colorit(15);
+	}
+
+	
 	//gotoxy(0,0);
 }
 //////////////////////////////////////////////////////////////////
@@ -168,7 +258,9 @@ class player{
 	bool walkdrt;
 	bool uitem;
 	int protect;
-	bool rand;
+	bool randp;
+	bool doub;
+	bool fortune;
 	
 	//////////////////
 	position mypos;
@@ -185,6 +277,7 @@ class player{
 	void getitem(item *);
 	void useitem(int,map &);
 	player* chtarget(map &);
+	int rolldice(map &);
 	void reset();
 };
 //////////////////////////////////////////////////
@@ -206,7 +299,9 @@ player::player(int n,string na,int c,pad *p,int mp){
 	walkdrt= true;//true ++ / false --
 	uitem= true;
 	protect = 0;
-	rand =true;
+	randp =true;
+	doub = false;
+	fortune= false;
 
 }
 /////////////////////////////////////////////////////////////////
@@ -265,7 +360,7 @@ void player::drawme(int x=0,int y=0){
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void player::drawstat(int p=-1,int t=-1){
 	gotoxy(statpos.x,statpos.y);
-	cout <<"   "<<"P"<<num<<": "<<name;
+	cout <<"   "<<name;
 	gotoxy(statpos.x,statpos.y+1);
 	cout<<"   ";
 	if(no == 1)cout<<"1st";
@@ -275,12 +370,33 @@ void player::drawstat(int p=-1,int t=-1){
 	cout<<"(pad: "<<myPad->num<<")";
 	drawme(statpos.x,statpos.y+1);
 	if(p !=-1 && t !=-1){
+//	gotoxy(statpos.x-2,statpos.y-2);
+	//cout<< myturn;
 	
 		gotoxy(statpos.x,statpos.y-2);
-		//cout<<myturn<<" ";
-		if(t%p == myturn) cout<<"Your turn";
-		else if((t+1)%p == myturn) cout<<"Next";
-		else cout<<"            ";
+		colorit(12);
+		cout<<"  >";
+		colorit(15);
+		if(t%p == myturn)
+		{
+			cout<<"Your turn";
+			colorit(12);
+			cout<<"<     ";
+			colorit(15);
+		}
+		else if((t+1)%p == myturn) 
+		{
+			cout<<"Next";
+			colorit(12);
+			cout<<"<     ";
+			colorit(15);
+	
+		}
+		else 
+		{
+			gotoxy(statpos.x,statpos.y-2);
+			cout<<"               ";	
+		}
 	}
 	//draw stat buff de buff
 	gotoxy(statpos.x,statpos.y+2);
@@ -585,7 +701,6 @@ void player::ladsnakto(pad *despad){
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void randomevent(position &,player*);
 void player::gotopad(int n){
-
 	bool walkdirec =true;//true = go upper +,flase = go back - 
 	if(n<0) walkdirec =false;
 	pad * temppad = myPad;
@@ -688,7 +803,7 @@ void player::gotopad(int n){
 	}
 	getitem(0);
 	if(myPad->type =='R' && rand){
-	position randpos(140,statpos.y);
+	position randpos(170,statpos.y+4);
 	randomevent(randpos,this);
 	}
 	drawme();
@@ -719,10 +834,11 @@ void player::useitem(int i,map & m){
 ///////////////////////////////////////////////////////////////////////
 void player::reset(){
 	walk= true;
-	walkdrt= true;
+	//walkdrt= true;
 	uitem = true;
 	if(protect >0)protect--;
-	rand =true;
+	randp =true;
+	
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1025,6 +1141,18 @@ void map::drawmap(){
 		if(i%2==0)psq(112,1);
 		else psq(128,1);
 	}
+	/////////draw square/////////
+	gotoxy(140,pads[0].pos.y+4);
+	psq(224,36);
+	for(int i=0;i<17;i++)
+	{
+		gotoxy(140,pads[0].pos.y+4+i);
+		psq(224,1);
+		gotoxy(140+72,pads[0].pos.y+4+i);
+		psq(224,1);
+	}
+	gotoxy(140,pads[0].pos.y+20);
+	psq(224,36);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1252,11 +1380,11 @@ void drawDice(int d,position p)
 	}
 
 } 
-int rolldice(map & m){
+int player::rolldice(map & m){
 	
 	position p= m.pads[0].pos;
-	p.x=140;
-	p.y= p.y+4;
+	p.x=150;
+	p.y= p.y+7;
 	int dice;
 	int c=getch();
 			////god mode////
@@ -1326,7 +1454,12 @@ int rolldice(map & m){
 		}
 		
 	//gotoxy(p.x,p.y+3);
-	dice= dicelist[rand()%dicelist.size()];
+	dice = dicelist[rand()%dicelist.size()];
+	if(fortune)
+	{
+		dice =(R%35)/6+1;
+		fortune=false;
+	 } 
 	PlaySound(TEXT("sound/dice.wav"),NULL,SND_SYNC);
 	for(int i=20;i<=300;i+=20)
 	{
@@ -1348,7 +1481,16 @@ int rolldice(map & m){
 	
 	Sleep(800);
 	drawDice(0,position(p.x+20,p.y+5));
-
+	if(doub) 
+	{
+		dice*=2;
+		doub = false;
+	}
+	if(!walkdrt) 
+	{
+		dice*=-1;	
+		walkdrt = true;
+	}
 	//cout<< dice;
 	//pd
 	///clean////
@@ -1364,8 +1506,8 @@ int rolldice(map & m){
 player* player::chtarget(map & m)
 {
 	position p= m.pads[0].pos;
-	p.y= p.y+4;
-	p.x = 140;
+	p.y= p.y+6;
+	p.x = 170;
 	vector<player*> plist;
 	for(int i=0;i<m.myplayer.size();i++)
 	{
@@ -1529,6 +1671,22 @@ void item::useme(player *tar,player*me,pad*p )
 	
 }
 void drawevent(position &p,int x){
+	gotoxy(p.x-2,p.y-1);
+	psq(143,7);
+	gotoxy(p.x+2,p.y-1);
+	colorit(143);
+	cout<<"RANDOM";
+	colorit(15);
+	for(int i=0;i<5;i++)
+	{
+		gotoxy(p.x-2,p.y+i);
+		psq(143,1);
+		gotoxy(p.x+10,p.y+i);
+		psq(143,1);
+	}
+	gotoxy(p.x-2,p.y+5);
+	psq(143,7);
+	
 	for(int i =0;i<5;i++){
 		gotoxy(p.x,p.y+i);
 		psq(0,5);
@@ -1536,10 +1694,10 @@ void drawevent(position &p,int x){
 	switch(x)
 	{
 		case 0://clear
-			for(int i =0;i<5;i++)
+			for(int i =0;i<7;i++)
 			{
-			gotoxy(p.x,p.y+i);
-			psq(0,5);
+			gotoxy(p.x-2,p.y+i-1);
+			psq(0,7);
 			}
 		break;
 		case 1://>
@@ -1579,7 +1737,7 @@ void drawevent(position &p,int x){
 			gotoxy(p.x+2,p.y+4);
 			psq(32,3);
 			break;
-		case 4://l
+		case 4://L ladder
 			gotoxy(p.x+2,p.y);
 			psq(240,1);
 			gotoxy(p.x+2,p.y+1);
@@ -1591,36 +1749,91 @@ void drawevent(position &p,int x){
 			gotoxy(p.x+2,p.y+4);
 			psq(240,3);
 			break;
-			break;
+		case 5://I(green) randitem
+			gotoxy(p.x+2,p.y);
+			psq(160,3);
+			gotoxy(p.x+4,p.y+1);
+			psq(160,1);
+			gotoxy(p.x+4,p.y+2);
+			psq(160,1);
+			gotoxy(p.x+4,p.y+3);
+			psq(160,1);
+			gotoxy(p.x+2,p.y+4);
+			psq(160,3);
+		break;
+		case 6://-I(red) rand remove item
+			gotoxy(p.x+2,p.y);
+			psq(192,3);
+			gotoxy(p.x+4,p.y+1);
+			psq(192,1);
+			gotoxy(p.x+4,p.y+2);
+			psq(192,1);
+			gotoxy(p.x+4,p.y+3);
+			psq(192,1);
+			gotoxy(p.x+2,p.y+4);
+			psq(192,3);	
+		break;
+		case 7://v debuff rand
+		gotoxy(p.x+4,p.y);
+			psq(192,1);
+			gotoxy(p.x+4,p.y+1);
+			psq(192,1);
+			gotoxy(p.x,p.y+2);
+			psq(192,1);
+			psq(0,1);
+			psq(192,1);
+			psq(0,1);
+			psq(192,1);
+			gotoxy(p.x+2,p.y+3);
+			psq(192,3);
+			gotoxy(p.x+4,p.y+4);
+			psq(192,1);	
+		break;
+		case 8://^ buff rand
+		gotoxy(p.x+4,p.y);
+			psq(160,1);
+			gotoxy(p.x+4,p.y+3);
+			psq(160,1);
+			gotoxy(p.x,p.y+2);
+			psq(160,1);
+			psq(0,1);
+			psq(160,1);
+			psq(0,1);
+			psq(160,1);
+			gotoxy(p.x+2,p.y+1);
+			psq(160,3);
+			gotoxy(p.x+4,p.y+4);
+			psq(160,1);	
+		break;
 	}
 	
 }
 
 void randomevent(position &p,player*me){
-	int j =0,i;
-	me->rand = false;
+	int i=1;
+	me->randp = false;
 		while(true)
 		{
-			i=(j%4)+1;
 			if (_kbhit()==1)
 	    	{	
 				if(getch()==13)break;
 	    	}
+	    	i= rand()%8+1;
 	    	drawevent(p,i);
 	    	Sleep(500);
-	    	j++;
-	    	j=j%4;
+
 		}
 		drawevent(p,i);
 	pad* temp;
+	int t;
 	switch(i)
 	{
 		case 1:
-		me->gotopad(rand()%10);
+		me->gotopad(rand()%9+1);
 		break;
 		
 		case 2:
-		me->gotopad(-(rand()%10));
+		me->gotopad(-(rand()%9+1));
 		break;
 		
 		case 4:
@@ -1634,15 +1847,56 @@ void randomevent(position &p,player*me){
 		break;
 		
 		case 3:
-		temp = me->myPad;
-		if(temp->num < me->maxpad)temp--;
-		while(temp->pos.x != me->myPad->pos.x &&temp->num>1)
-		{
-			temp--;
-		}
-		if(temp->pos.y!= me->myPad->pos.y)me->ladsnakto(temp);
-		break;
-		
+			temp = me->myPad;
+			if(temp->num < me->maxpad)temp--;
+			while(temp->pos.x != me->myPad->pos.x &&temp->num>1)
+			{
+				temp--;
+			}
+			if(temp->pos.y!= me->myPad->pos.y)me->ladsnakto(temp);
+			break;
+		case 5://I(green) randitem
+			me->getitem(&itemlist[randitem()]);
+			break;
+			
+		case 6://I(red)
+	 		t=rand()%me->myitem.size();
+	 		me->myitem.erase(me->myitem.begin()+t);
+			break;
+			
+		case 7://de buf
+			t=rand()%4;
+				switch(t){
+					case 0:
+						me->walkdrt = false;
+						break;
+					case 1:
+						me->uitem= false;
+						break;
+					case 2:
+						me->walk = false;
+						break;
+					case 3:
+						me->walk = false;
+						me->uitem= false;
+						break;
+				}
+			break;
+		case 8://buf
+			t=rand()%3;
+				switch(t){
+					case 0:
+						me->doub = true;
+						break;
+					case 1:
+						me->protect +=2;
+						break;
+					case 2:
+						me->fortune = true;
+						break;
+
+				}
+			break;
 	}
 	Sleep(1000);
 	drawevent(p,0);
