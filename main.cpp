@@ -118,14 +118,269 @@ int showmeneu(){
 	{
 		system("cls");
 		colorit(15);
-		gotoxy(20,2);	
+		gotoxy(80,15);	
 		cout<<"START";
-		gotoxy(20,3);
+		gotoxy(20,16);
 		cout<<"HOW TO PLAY";
-		gotoxy(20,4);
+		gotoxy(80,4);
 		cout<<"EXIT";
-		gotoxy(20,6);
+		gotoxy(80,17);
 		cout<<"w->up    s->down  Enter->Submit";
+	
+	int px=55,py=6,n=10,pcolor[]={17,34,85,102,119,153,170,187,204,221,236,255},rcolor=rand()%n;
+	
+		
+		// Road //
+		{
+	
+			// R //
+			{
+			colorit(pcolor[rcolor]);
+			gotoxy(px,py);
+			cout<<"666666";
+			gotoxy(px,py+2);
+			cout<<"rrrr";
+				for(int ro=py+1;ro < py+5;ro++){
+				gotoxy(px,ro);
+				cout<<"..";
+				gotoxy(px+4,ro);
+				cout<<"..";
+			}
+			colorit(0);
+			gotoxy(px+5,py+2);
+			cout<<"r";
+			gotoxy(px+5,py);
+			cout<<"r";
+			}
+			// O //
+			px+=8;
+			{
+				rcolor=rand()%n;
+			colorit(pcolor[rcolor]);
+			gotoxy(px,py);
+			cout<<"ooooo";
+			gotoxy(px,py+4);
+			cout<<"ooooo";
+				for(int ro=py+1;ro < py+5;ro++){
+				gotoxy(px,ro);
+				cout<<"  ";
+				gotoxy(px+4,ro);
+				cout<<"  ";
+			}
+			colorit(0);
+			gotoxy(px,py+4);
+			cout<<"r";
+			gotoxy(px,py);
+			cout<<"r";
+			gotoxy(px+5,py+4);
+			cout<<"r";
+		}
+			// A //
+			px+=8; 
+			{
+				rcolor=rand()%n;
+			colorit(pcolor[rcolor]);
+			gotoxy(px+1,py);
+			cout<<"rroa";
+			gotoxy(px,py+2);
+			cout<<"rroaar";
+				for(int ro=py+1;ro < py+5;ro++){
+				gotoxy(px,ro);
+				cout<<"  ";
+				gotoxy(px+4,ro);
+				cout<<"  ";
+			}
+			colorit(0);
+			gotoxy(px,py);
+			cout<<"a";
+		}
+			//  D //
+				px+=8;
+			{
+			rcolor=rand()%n;
+			colorit(pcolor[rcolor]);
+			gotoxy(px,py);
+			cout<<"rrord";
+			gotoxy(px,py+4);
+			cout<<"rrord";
+			for(int ro=py+1;ro < py+5;ro++){
+				gotoxy(px,ro);
+				cout<<"  ";
+				gotoxy(px+4,ro);
+				cout<<"  ";
+			}
+			colorit(0);
+			gotoxy(px+5,py+4);
+			cout<<"r";
+		}	
+	}	
+		// To //
+		{
+		rcolor=rand()%n;
+			//  T //
+			px += 10;
+			{
+			colorit(pcolor[rcolor]);
+			gotoxy(px,py);
+			cout<<"ttttttt";
+			
+			for(int ro=py;ro < py+5;ro++){
+				gotoxy(px+2,ro);
+				cout<<"0.4";
+			}
+		
+			
+			}
+			//  o //
+			px=px+8;
+		{
+				rcolor=rand()%n;
+			colorit(pcolor[rcolor]);
+			gotoxy(px,py);
+			cout<<"ooooo";
+			gotoxy(px,py+4);
+			cout<<"ooooo";
+			for(int ro=py+1;ro < py+5;ro++)
+			{
+				gotoxy(px,ro);
+				cout<<"  ";
+				gotoxy(px+4,ro);
+				cout<<"  ";
+			}
+			colorit(0);
+			gotoxy(px,py+4);
+			cout<<"r";
+			gotoxy(px,py);
+			cout<<"r";
+			gotoxy(px+5,py+4);
+			cout<<"r";
+		}
+	}		
+		// The //
+		{
+			rcolor=rand()%n;
+			// T //
+			px+=11;
+		{
+			colorit(pcolor[rcolor]);
+			gotoxy(px,py);
+			cout<<"ttttttt";
+			
+			for(int ro=py+1;ro < py+5;ro++)
+			{
+				gotoxy(px+2,ro);
+				cout<<"0.4";
+			}
+		}
+			// H //
+			px += 8;
+		
+			{
+			rcolor=rand()%n;	
+			colorit(pcolor[rcolor]);
+			gotoxy(px,py+2);
+			cout<<"ttthhtt";
+		for(int ro=py;ro < py+5;ro++){
+		
+				gotoxy(px,ro);
+				cout<<". ";
+				gotoxy(px+5,ro);
+				cout<<". ";
+			}	
+			
+			}
+			
+			// E //
+			px += 9;
+			{
+				rcolor=rand()%n;
+			colorit(pcolor[rcolor]);
+			gotoxy(px,py+2);
+			cout<<"ttttt";
+			gotoxy(px,py);
+			cout<<"ttttt";
+			gotoxy(px,py+4);
+			cout<<"ttttt";
+			for(int ro=py;ro < py+5;ro++){
+				gotoxy(px-1,ro);
+				cout<<". ";
+			}		
+		
+			}			
+		}
+		
+		// SKY //
+		{
+			rcolor=rand()%n;
+			//  S // 
+			px+=10;
+			{
+				colorit(pcolor[5]);
+				gotoxy(px,py);
+				cout<<"555555";
+				gotoxy(px,py+1);
+				cout<<"55";
+				gotoxy(px,py+2);
+				cout<<"555555";
+				gotoxy(px+4,py+3);
+				cout<<"55";
+				gotoxy(px,py+4);
+				cout<<"555555";
+				}	
+			// K //
+			px+=8;
+			{
+				for(int i=py;i< py+5;i++)
+				{
+				colorit(pcolor[5]);
+				gotoxy(px,i);
+				cout<<"55";
+				}
+				gotoxy(px+6,py);
+				cout<<"55";
+				gotoxy(px+4,py+1);
+				cout<<"55";
+				gotoxy(px+2,py+2);
+				cout<<"55";
+				gotoxy(px+4,py+3);
+				cout<<"55";
+				gotoxy(px+6,py+4);
+				cout<<"55";
+			}
+			// Y //
+			px+=10;
+			{
+				colorit(pcolor[5]);
+				gotoxy(px,py);
+				cout<<"55";
+				gotoxy(px+8,py);
+				cout<<"55";
+				gotoxy(px+2,py+2);
+				cout<<"55";
+				gotoxy(px+6,py+2);
+				cout<<"55";
+				gotoxy(px,py+1);
+				cout<<"55";
+				gotoxy(px+8,py+1);
+				cout<<"55";
+				gotoxy(px+4,py+3);
+				cout<<"55";
+				gotoxy(px+4,py+4);
+				cout<<"55";
+				
+			}			
+		}
+		
+		/// krop //
+		{
+			
+			
+			
+		}
+		
+		
+	
+	
 		switch(chosse)
 		{
 			case 0:
