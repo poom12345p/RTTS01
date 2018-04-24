@@ -491,9 +491,11 @@ int main(){
 	cout<<endl;
 	cout<<endl;
 	cout<<endl;
-	int N=50,c=200;
+	
+	
+	int N=46,c=207;
 for(int i=0;i<3;i++){
-
+c=162;
 	psq(1,N);
 	psq(c,2);
 	psq(1,6);
@@ -506,7 +508,7 @@ for(int i=0;i<3;i++){
 	psq(c,2);
 	cout<<endl;}
 for(int i=0;i<3;i++){
-	
+	c=225;
 	psq(1,N);
 	psq(c,2);
 	psq(1,6);
@@ -519,6 +521,7 @@ for(int i=0;i<3;i++){
 	psq(c,2);
 	cout<<endl;}
 for(int i=0;i<3;i++){
+	c=207;
 	psq(1,N);
 	psq(c,2);
 	psq(1,2);
@@ -537,6 +540,7 @@ for(int i=0;i<3;i++){
 
 }
 for(int i=0;i<3;i++){
+	c=144;
 	psq(1,N);
 	psq(c,4);
 	psq(1,2);
@@ -552,7 +556,7 @@ for(int i=0;i<3;i++){
 	
 }
 for(int i=0;i<3;i++){
-
+c=252;
 	psq(1,N);
 	psq(c,2);
 	psq(1,6);
