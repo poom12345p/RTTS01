@@ -27,10 +27,166 @@ void SetWindow(int Width, int Height)//don,t care//set window size
     SetConsoleScreenBufferSize(Handle, coord);            // Set Buffer Size
     SetConsoleWindowInfo(Handle, TRUE, &Rect);            // Set Window Size
     }
-
-int main(){
-	SetWindow(250,300);
-  	psq(1,125);
+void numberwinner(int winner){
+	int space=60,colors=176;
+if(winner==1){
+	for(int i=0;i<2;i++){
+	psq(1,space);
+	psq(1,4);
+	psq(colors,2);
+	cout<<endl;}
+	for(int i=0;i<2;i++){
+	psq(1,space);
+	psq(1,2);
+	psq(colors,4);
+	cout<<endl;}
+	for(int i=0;i<2;i++){
+	psq(1,space);
+	psq(colors,2);
+	psq(1,2);
+	psq(colors,2);
+	cout<<endl;}
+	for(int i=0;i<2;i++){
+	psq(1,space);
+	psq(1,4);
+	psq(colors,2);
+	cout<<endl;}
+	for(int i=0;i<2;i++){
+	psq(1,space);
+	psq(1,4);
+	psq(colors,2);
+	cout<<endl;}
+	for(int i=0;i<2;i++){
+	psq(1,space);
+	psq(1,4);
+	psq(colors,2);
+	cout<<endl;}
+	for(int i=0;i<2;i++){
+	psq(1,space);
+	psq(1,2);
+	psq(colors,6);
+	cout<<endl;}
+	}
+else if(winner ==2){
+		for(int i=0;i<2;i++){
+	psq(1,space);
+	psq(1,2);
+	psq(colors,4);
+	cout<<endl;}
+	for(int i=0;i<2;i++){
+	psq(1,space);
+	
+	psq(colors,2);
+	psq(1,4);
+	psq(colors,2);
+	cout<<endl;}
+	for(int i=0;i<2;i++){
+	psq(1,space);
+	
+	psq(1,6);
+	psq(colors,2);
+	cout<<endl;}
+	for(int i=0;i<2;i++){
+	psq(1,space);
+	psq(1,4);
+	psq(colors,2);
+	cout<<endl;}
+	for(int i=0;i<2;i++){
+	psq(1,space);
+	psq(1,2);
+	psq(colors,2);
+	cout<<endl;}
+	for(int i=0;i<2;i++){
+	psq(1,space);
+	psq(colors,2);
+	cout<<endl;}
+	for(int i=0;i<2;i++){
+	psq(1,space);
+	psq(colors,8);
+	cout<<endl;}
+	}
+else if(winner ==3){
+	for(int i=0;i<2;i++){
+	psq(1,space);
+	psq(1,2);
+	psq(colors,4);
+	cout<<endl;}
+	for(int i=0;i<2;i++){
+	psq(1,space);
+	psq(colors,2);
+	psq(1,4);
+	psq(colors,2);
+	cout<<endl;}
+	for(int i=0;i<2;i++){
+	psq(1,space);
+	psq(1,6);
+	psq(colors,2);
+	cout<<endl;}
+	for(int i=0;i<2;i++){
+	psq(1,space);
+	psq(1,2);
+	psq(colors,4);
+	cout<<endl;}
+	for(int i=0;i<2;i++){
+	psq(1,space);
+	psq(1,6);
+	psq(colors,2);
+	cout<<endl;}
+	for(int i=0;i<2;i++){
+	psq(1,space);
+	psq(colors,2);
+	psq(1,4);
+	psq(colors,2);
+	cout<<endl;}
+	for(int i=0;i<2;i++){
+	psq(1,space);
+	psq(1,2);
+	psq(colors,4);
+	cout<<endl;}
+	}
+else if(winner ==4){
+	for(int i=0;i<2;i++){
+	psq(1,space);
+	psq(colors,2);
+	psq(1,4);
+	psq(colors,2);
+	cout<<endl;}
+	for(int i=0;i<2;i++){
+	psq(1,space);
+	psq(colors,2);
+	psq(1,4);
+	psq(colors,2);
+	cout<<endl;}
+	for(int i=0;i<2;i++){
+	psq(1,space);
+	psq(colors,2);
+	psq(1,4);
+	psq(colors,2);
+	cout<<endl;}
+	for(int i=0;i<2;i++){
+	psq(1,space);
+	psq(1,2);
+	psq(colors,6);
+	cout<<endl;}
+	for(int i=0;i<2;i++){
+	psq(1,space);
+	psq(1,6);
+	psq(colors,2);
+	cout<<endl;}
+	for(int i=0;i<2;i++){
+	psq(1,space);
+	psq(1,6);
+	psq(colors,2);
+	cout<<endl;}
+	for(int i=0;i<2;i++){
+	psq(1,space);
+	psq(1,6);
+	psq(colors,2);
+	cout<<endl;}
+	}
+}
+void cup(){
+	psq(1,125);
 	//1
 	psq(1,63/2);
   	psq(120,3);
@@ -488,12 +644,114 @@ int main(){
 	cout<<endl;
 	psq(1,105/2);
 	psq(236,20);//1
-	cout<<endl;
-	cout<<endl;
-	cout<<endl;
+}
+void playerword(){
+		int color=235,wak=36;
+for(int i=0;i<3;i++){
+	color=162;
+	psq(1,wak);
+	psq(color,6);
+	psq(1,4);
+	psq(color,2);
+	psq(1,2);
+	cout<<endl;}
 	
+	for(int i=0;i<3;i++){
+	color=162;
+	psq(1,wak);
+	psq(color,2);
+	psq(1,4);
+	psq(color,2);
+	psq(1,2);
+	psq(color,2);
+	psq(1,4);
+	psq(color,6);
+	psq(1,2);
+	psq(color,2);
+	psq(1,4);
+	psq(color,2);
+	psq(1,4);
+	psq(color,4);
+	psq(1,4);
+	psq(color,2);
+	psq(1,2);
+	psq(color,2);
+	cout<<endl;}
 	
-	int N=46,c=207;
+	for(int i=0;i<3;i++){
+	color=162;
+	psq(1,wak);
+	psq(color,2);
+	psq(1,4);
+	psq(color,2);
+	psq(1,2);
+	psq(color,2);
+	psq(1,2);
+	psq(color,2);
+	psq(1,4);
+	psq(color,2);
+	psq(1,2);
+	psq(color,2);
+	psq(1,4);
+	psq(color,2);
+	psq(1,2);
+	psq(color,2);
+	psq(1,4);
+	psq(color,2);
+	psq(1,2);
+	psq(color,4);
+	cout<<endl;}
+	
+	for(int i=0;i<3;i++){
+	color=162;
+	psq(1,wak);
+	psq(color,6);
+	psq(1,4);
+	psq(color,2);
+	psq(1,2);
+	psq(color,2);
+	psq(1,4);
+	psq(color,2);
+	psq(1,2);
+	psq(color,2);
+	psq(1,4);
+	psq(color,2);
+	psq(1,2);
+	psq(color,2);
+	psq(1,2);
+	psq(color,2);
+	psq(1,4);
+	psq(color,2);
+	cout<<endl;}
+	
+	for(int i=0;i<3;i++){
+	color=162;
+	psq(1,wak);
+	psq(color,2);
+	psq(1,8);
+	psq(color,2);
+	psq(1,4);
+	psq(color,6);
+	psq(1,4);
+	psq(color,6);
+	psq(1,4);
+	psq(color,6);
+	psq(1,2);
+	psq(color,2);
+	cout<<endl;}
+for(int i=0;i<3;i++){
+	color=162;
+	psq(1,wak+30);
+	psq(color,2);
+	cout<<endl;}
+for(int i=0;i<3;i++){
+ 	color=162;
+	psq(1,wak+26);
+	psq(color,4);
+	cout<<endl;}
+}
+void winword(){
+	int N=38,c=207;
 for(int i=0;i<3;i++){
 c=162;
 	psq(1,N);
@@ -505,6 +763,10 @@ c=162;
 	psq(1,2);
 	psq(c,2);
 	psq(1,6);
+	psq(c,2);
+	psq(1,4);
+	psq(c,8);
+	psq(1,2);
 	psq(c,2);
 	cout<<endl;}
 for(int i=0;i<3;i++){
@@ -518,6 +780,10 @@ for(int i=0;i<3;i++){
 	psq(1,4);
 	psq(c,4);
 	psq(1,4);
+	psq(c,2);
+	psq(1,2);
+	psq(c,2);
+	psq(1,10);
 	psq(c,2);
 	cout<<endl;}
 for(int i=0;i<3;i++){
@@ -536,6 +802,10 @@ for(int i=0;i<3;i++){
 	psq(c,2);
 	psq(1,2);
 	psq(c,2);
+	psq(1,4);
+	psq(c,6);
+	psq(1,4);
+	psq(c,2);
 	cout<<endl;
 
 }
@@ -550,9 +820,14 @@ for(int i=0;i<3;i++){
 	psq(1,4);
 	psq(c,2);
 	psq(1,4);
-	psq(c,4);
-	cout<<endl;
 	
+	
+	psq(c,4);
+	
+	psq(1,10);
+	psq(c,2);
+
+	cout<<endl;
 	
 }
 for(int i=0;i<3;i++){
@@ -567,8 +842,36 @@ c=252;
 	psq(c,2);
 	psq(1,6);
 	psq(c,2);
+	psq(1,2);
+	psq(c,8);
+	psq(1,4);
+	psq(c,2);
 	cout<<endl;}
+	cout<<endl;
 
 
 }
+int main(){
+	SetWindow(250,300);
+cup();
+	cout<<endl;
+	cout<<endl;
+	cout<<endl;
+playerword();
+
+	
+	cout<<endl;
+	cout<<endl;
+	cout<<endl;
+
+numberwinner(1);// input playernumber winner 1,2,3,4
+	
+	
+	cout<<endl;
+	cout<<endl;
+	cout<<endl;
+winword();
+
+}
+
 
