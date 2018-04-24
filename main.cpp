@@ -104,11 +104,134 @@ int play(map &mymap){
 	   //mymap.update();
 	}
 }
-void crechar(map &mymap){
+/*void crechar(map &mymap){
 	mymap.myplayer.push_back(player(1,"P1",192,&mymap.pads[0],mymap.maxpad));
 	mymap.myplayer.push_back(player(2,"P2",16,&mymap.pads[0],mymap.maxpad));
 	mymap.myplayer.push_back(player(3,"P3",208,&mymap.pads[0],mymap.maxpad));
 	mymap.myplayer.push_back(player(4,"P4",160,&mymap.pads[0],mymap.maxpad));
+}*/
+void character(int num,map &mymap,int l,vector<string> face,vector<int> &color_f, vector<int> &color_b){
+	
+	int chosse=0;
+		char comd;
+		while(comd != 13)//Enter key = 13
+		{
+			//system("cls");
+			colorit(11);
+			gotoxy(3+l,2);	
+			cout<<"Please select your character";
+			gotoxy(17+l,8);
+			colorit(15);		
+			chosse = (10 + chosse)%10; 
+			psq(240,0.5,face[chosse][0]);
+			psq(240,0.5,face[chosse][1]);
+			comd = getch();	
+			if(comd =='a')chosse--;
+			else if(comd == 'd')chosse++;
+		}
+		string p_f = face[chosse];
+		comd = getch();chosse = 0;	
+		while(comd != 13)//Enter key = 13
+		{
+			//system("cls");
+			colorit(11);
+			gotoxy(3+l,2);	
+			cout<<"Please select your character";
+			gotoxy(17+l,8);
+			chosse = (color_f.size() + chosse)%color_f.size(); 
+			psq(color_f[chosse],0.5,p_f[0]);
+			psq(color_f[chosse],0.5,p_f[1]);
+			comd = getch();	
+			if(comd =='a')chosse--;
+			else if(comd == 'd')chosse++;
+		}
+		int c_f = color_f[chosse];
+		color_f.erase(color_f.begin()+chosse);
+		comd = getch();chosse = 0;
+		while(comd != 13)//Enter key = 13
+		{
+			gotoxy(17+l,9);
+			chosse = (color_b.size() + chosse)%color_b.size();
+			psq(color_b[chosse],0.5,p_f[0]);
+			psq(color_b[chosse],0.5,p_f[1]);
+			comd = getch();	
+			if(comd =='a')chosse--;
+			else if(comd == 'd')chosse++;
+		}
+		int c_b = color_b[chosse];
+		color_b.erase(color_b.begin()+chosse);
+		string name;
+		gotoxy(5+l,12);
+		colorit(11);
+		cout << "Please input your name: " ;
+		gotoxy(5+l,13); ;
+		comd = getch(); 
+		//while(comd != 13){
+			cin.ignore();
+			getline(cin,name);//cin >> name;
+			comd = getch();
+		//}
+		mymap.myplayer.push_back(player(num,name,c_f,c_b,&mymap.pads[0],mymap.maxpad,p_f));
+		//mymap.myplayer.push_back(player(2,"P2",16,&mymap.pads[0],mymap.maxpad));
+		//mymap.myplayer.push_back(player(3,"P3",208,&mymap.pads[0],mymap.maxpad));
+		//mymap.myplayer.push_back(player(4,"P4",160,&mymap.pads[0],mymap.maxpad));
+}
+
+void botton(int c,int x,int y,string text,int n){
+	gotoxy(x,y);psq(c,5+(n/2));gotoxy(x,y+1);psq(c,5+(n/2));
+	gotoxy(x,y+2);psq(c,2.5);colorit(c);cout << text; psq(c,2.5);
+	gotoxy(x,y+3);psq(c,5+(n/2));gotoxy(x,y+4);psq(c,5+(n/2));
+}
+
+int crechar(map &mymap){
+	string f[10] = {"><","##","^^","**","--","++","$$","!!","==","::"};
+	int cf[23] = {27,15,42,46,59,63,79,89,95,106,116,160,180,188,192,207,208,220,225,236,240,245,252};
+	int cb[16] = {0,17,34,51,68,85,102,119,136,153,170,187,204,221,238,255};
+	vector<string> face; vector<int> color_f; vector<int> color_b;
+	for(int i=0;i<10;i++){face.push_back(f[i]);}
+	for(int i=0;i<23;i++){color_f.push_back(cf[i]);}
+	for(int i=0;i<16;i++){color_b.push_back(cb[i]);}
+	
+	int chosse = 0;		char comd;
+	int num = 0;
+	int lenght = 0;
+	colorit(15);gotoxy(72,32); cout<<"left<-a    d->right  Enter->Submit";
+	while(chosse != 3){
+		while(comd != 13){	
+			botton(144,10,23,"BACK TO MENU",12);
+			botton(176,70,23,"ADD NEW PLAYER",14);
+			botton(128,132,23,"ENTER GAME",10);
+			switch(chosse){
+				case 0:botton(199,10,23,"BACK TO MENU",12);break;					
+				case 1:botton(199,70,23,"ADD NEW PLAYER",14);break;
+				case 2:botton(199,132,23,"ENTER GAME",10);break;
+				//case 3:botton(199,132,23,"ENTER GAME",10);break;
+				default:break;	
+			}
+			comd = getch();
+			if(comd =='a')chosse--;
+			else if(comd == 'd')chosse++;
+			chosse = (3+(chosse))%3;	
+		}
+		if(num>=2){ 
+			if(chosse==2){ chosse=3; }
+			if(num>=4){ if(chosse==1){ chosse = 4; } } 
+		}
+		if(chosse == 0){ 
+			for(int i=0;i<num;i++){
+				mymap.myplayer.pop_back();
+			}
+			system("cls"); 
+			return 0;	
+		}
+		else if(chosse == 1){ num++; character(num,mymap,lenght,face,color_f,color_b); lenght+=50; }
+		else if(chosse == 2){ gotoxy(75,45); colorit(15); cout << "PLEASE ADD NEW MORE PLAYER";	}
+		else if(chosse == 3){ system("cls"); return 1; }
+		else if(chosse == 4){ gotoxy(75,45); colorit(15); cout << "CAN'T ADD NEW MORE PLAYER"; }
+		//gotoxy(0,0);cout << chosse <<" "<<num;
+		comd = getch(); gotoxy(75,45); psq(1,13);
+	}
+	
 }
 
 int showmeneu(){
@@ -118,269 +241,14 @@ int showmeneu(){
 	{
 		system("cls");
 		colorit(15);
-		gotoxy(80,15);	
+		gotoxy(20,2);	
 		cout<<"START";
-		gotoxy(20,16);
+		gotoxy(20,3);
 		cout<<"HOW TO PLAY";
-		gotoxy(80,4);
+		gotoxy(20,4);
 		cout<<"EXIT";
-		gotoxy(80,17);
+		gotoxy(20,6);
 		cout<<"w->up    s->down  Enter->Submit";
-	
-	int px=55,py=6,n=10,pcolor[]={17,34,85,102,119,153,170,187,204,221,236,255},rcolor=rand()%n;
-	
-		
-		// Road //
-		{
-	
-			// R //
-			{
-			colorit(pcolor[rcolor]);
-			gotoxy(px,py);
-			cout<<"666666";
-			gotoxy(px,py+2);
-			cout<<"rrrr";
-				for(int ro=py+1;ro < py+5;ro++){
-				gotoxy(px,ro);
-				cout<<"..";
-				gotoxy(px+4,ro);
-				cout<<"..";
-			}
-			colorit(0);
-			gotoxy(px+5,py+2);
-			cout<<"r";
-			gotoxy(px+5,py);
-			cout<<"r";
-			}
-			// O //
-			px+=8;
-			{
-				rcolor=rand()%n;
-			colorit(pcolor[rcolor]);
-			gotoxy(px,py);
-			cout<<"ooooo";
-			gotoxy(px,py+4);
-			cout<<"ooooo";
-				for(int ro=py+1;ro < py+5;ro++){
-				gotoxy(px,ro);
-				cout<<"  ";
-				gotoxy(px+4,ro);
-				cout<<"  ";
-			}
-			colorit(0);
-			gotoxy(px,py+4);
-			cout<<"r";
-			gotoxy(px,py);
-			cout<<"r";
-			gotoxy(px+5,py+4);
-			cout<<"r";
-		}
-			// A //
-			px+=8; 
-			{
-				rcolor=rand()%n;
-			colorit(pcolor[rcolor]);
-			gotoxy(px+1,py);
-			cout<<"rroa";
-			gotoxy(px,py+2);
-			cout<<"rroaar";
-				for(int ro=py+1;ro < py+5;ro++){
-				gotoxy(px,ro);
-				cout<<"  ";
-				gotoxy(px+4,ro);
-				cout<<"  ";
-			}
-			colorit(0);
-			gotoxy(px,py);
-			cout<<"a";
-		}
-			//  D //
-				px+=8;
-			{
-			rcolor=rand()%n;
-			colorit(pcolor[rcolor]);
-			gotoxy(px,py);
-			cout<<"rrord";
-			gotoxy(px,py+4);
-			cout<<"rrord";
-			for(int ro=py+1;ro < py+5;ro++){
-				gotoxy(px,ro);
-				cout<<"  ";
-				gotoxy(px+4,ro);
-				cout<<"  ";
-			}
-			colorit(0);
-			gotoxy(px+5,py+4);
-			cout<<"r";
-		}	
-	}	
-		// To //
-		{
-		rcolor=rand()%n;
-			//  T //
-			px += 10;
-			{
-			colorit(pcolor[rcolor]);
-			gotoxy(px,py);
-			cout<<"ttttttt";
-			
-			for(int ro=py;ro < py+5;ro++){
-				gotoxy(px+2,ro);
-				cout<<"0.4";
-			}
-		
-			
-			}
-			//  o //
-			px=px+8;
-		{
-				rcolor=rand()%n;
-			colorit(pcolor[rcolor]);
-			gotoxy(px,py);
-			cout<<"ooooo";
-			gotoxy(px,py+4);
-			cout<<"ooooo";
-			for(int ro=py+1;ro < py+5;ro++)
-			{
-				gotoxy(px,ro);
-				cout<<"  ";
-				gotoxy(px+4,ro);
-				cout<<"  ";
-			}
-			colorit(0);
-			gotoxy(px,py+4);
-			cout<<"r";
-			gotoxy(px,py);
-			cout<<"r";
-			gotoxy(px+5,py+4);
-			cout<<"r";
-		}
-	}		
-		// The //
-		{
-			rcolor=rand()%n;
-			// T //
-			px+=11;
-		{
-			colorit(pcolor[rcolor]);
-			gotoxy(px,py);
-			cout<<"ttttttt";
-			
-			for(int ro=py+1;ro < py+5;ro++)
-			{
-				gotoxy(px+2,ro);
-				cout<<"0.4";
-			}
-		}
-			// H //
-			px += 8;
-		
-			{
-			rcolor=rand()%n;	
-			colorit(pcolor[rcolor]);
-			gotoxy(px,py+2);
-			cout<<"ttthhtt";
-		for(int ro=py;ro < py+5;ro++){
-		
-				gotoxy(px,ro);
-				cout<<". ";
-				gotoxy(px+5,ro);
-				cout<<". ";
-			}	
-			
-			}
-			
-			// E //
-			px += 9;
-			{
-				rcolor=rand()%n;
-			colorit(pcolor[rcolor]);
-			gotoxy(px,py+2);
-			cout<<"ttttt";
-			gotoxy(px,py);
-			cout<<"ttttt";
-			gotoxy(px,py+4);
-			cout<<"ttttt";
-			for(int ro=py;ro < py+5;ro++){
-				gotoxy(px-1,ro);
-				cout<<". ";
-			}		
-		
-			}			
-		}
-		
-		// SKY //
-		{
-			rcolor=rand()%n;
-			//  S // 
-			px+=10;
-			{
-				colorit(pcolor[5]);
-				gotoxy(px,py);
-				cout<<"555555";
-				gotoxy(px,py+1);
-				cout<<"55";
-				gotoxy(px,py+2);
-				cout<<"555555";
-				gotoxy(px+4,py+3);
-				cout<<"55";
-				gotoxy(px,py+4);
-				cout<<"555555";
-				}	
-			// K //
-			px+=8;
-			{
-				for(int i=py;i< py+5;i++)
-				{
-				colorit(pcolor[5]);
-				gotoxy(px,i);
-				cout<<"55";
-				}
-				gotoxy(px+6,py);
-				cout<<"55";
-				gotoxy(px+4,py+1);
-				cout<<"55";
-				gotoxy(px+2,py+2);
-				cout<<"55";
-				gotoxy(px+4,py+3);
-				cout<<"55";
-				gotoxy(px+6,py+4);
-				cout<<"55";
-			}
-			// Y //
-			px+=10;
-			{
-				colorit(pcolor[5]);
-				gotoxy(px,py);
-				cout<<"55";
-				gotoxy(px+8,py);
-				cout<<"55";
-				gotoxy(px+2,py+2);
-				cout<<"55";
-				gotoxy(px+6,py+2);
-				cout<<"55";
-				gotoxy(px,py+1);
-				cout<<"55";
-				gotoxy(px+8,py+1);
-				cout<<"55";
-				gotoxy(px+4,py+3);
-				cout<<"55";
-				gotoxy(px+4,py+4);
-				cout<<"55";
-				
-			}			
-		}
-		
-		/// krop //
-		{
-			
-			
-			
-		}
-		
-		
-	
-	
 		switch(chosse)
 		{
 			case 0:
@@ -424,6 +292,7 @@ map cremap(){
 	cin>>rd;
 	}while(max-2 < li*4 || max-2-(li*4) < rd || ppl > 12 || max<19);
 	system("cls");
+	SetWindow(250,(max/ppl)*7+30);
 	return map(max,ppl,li,rd);
 }
 
@@ -608,20 +477,22 @@ void playerturn(map &mymap){
 int main(){
 	srand(time(0));
 	colorit(15);
-	SetWindow(250,200);
+	SetWindow(250,100);
 	int comd ;
 	while(comd !=2)
 	{
 		comd =showmeneu();
 		//cout<<comd;
 		if(comd==0){
-			int winner;
-			map mymap =cremap();
-			crechar(mymap);
-			playerturn(mymap);
-			mymap.drawmap();
-			winner = play(mymap);
-			winscreen(winner);
+			int choose, winner;
+				map mymap =cremap();
+				choose = crechar(mymap);
+				if(choose == 1){
+					playerturn(mymap);
+					mymap.drawmap();
+					winner = play(mymap);
+					winscreen(winner);
+				}	
 
 		}
 	}
