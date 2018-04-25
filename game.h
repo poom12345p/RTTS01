@@ -14,6 +14,7 @@ class player;
 class map;
 
 void  drawstar(position);
+void guide(int,int);
 
 struct linkpad{
 	int Head,Tail;
@@ -42,12 +43,12 @@ item::item(int i,string n){
 	}
 	else if(name =="Ice") 
 	{
-		rate=3;
+		rate=3;//3
 		type='T';
 	}
 	else if(name =="Warpscroll")
 	{
-		rate=3;
+		rate=3;//3
 		type='T';
 	} 
 	else if(name =="Lock")
@@ -67,12 +68,12 @@ item::item(int i,string n){
 	} 
 	else if(name =="Mug")
 	{
-		rate=6;
+		rate=6;//6
 		type='T';
 	} 
 	else if(name =="Trap")
 	{
-		rate=5;
+		rate=5;//5
 		type='P';
 	} 
 	else if(name =="Fortune")
@@ -169,7 +170,7 @@ void item::drawitem(position p){
 		psq(252,0.5,'X');
 	}
 	else if(name =="Double"){
-		colorit(10);
+		colorit(14);
 		cout<<">>>";
 		colorit(15);
 
@@ -177,7 +178,7 @@ void item::drawitem(position p){
 	else if(name =="Mug"){
 	
 		psq(64,0.5);
-		psq(4,0.5,'M');
+		psq(4,0.5,'S');
 		psq(64,0.5);
 	}
 	else if(name =="Trap"){
@@ -192,11 +193,11 @@ void item::drawitem(position p){
 	}
 	else if(name =="Fortune"){
 	
-		psq(224,0.5);
-		colorit(14);
-		cout<<"F";
+		psq(160,0.5);
+		colorit(10);
+		cout<<"L";
 		colorit(15);
-		psq(224,0.5);
+		psq(160,0.5);
 	}
 	else if(name =="Reverse"){
 	
@@ -264,7 +265,10 @@ class player{
 	bool doub;
 	bool fortune;
 	bool slow;
-	
+	bool ice;
+	bool rice;
+	bool rwalk;
+	bool ruitem;
 	//////////////////
 	position mypos;
 	int no;
@@ -308,16 +312,21 @@ player::player(int n,string na,int cf,int cb,pad *p,int mp,string f){
 	doub = false;
 	fortune= false;
 	slow=false;
+	ice=false;
+	rice=false;
+	rwalk=false;
+	ruitem=false;
 
 }
 /////////////////////////////////////////////////////////////////
 void player::getitem(item * t=0){
 	if(myitem.size()<4)
 	{
-	
+		
 		if(t ==0)
 		{
 			if(myPad->onpadItem !=0){
+				PlaySound(TEXT("sound/pick.wav"),NULL,SND_SYNC);
 				myitem.push_back(myPad->onpadItem);
 				myPad->onpadItem =0;
 				myPad->drawpad(0);
@@ -343,7 +352,7 @@ void player::drawme(int x=0,int y=0){
 	if(protect>0)colorit(11);
 	cout<<"P"<<num;
 	colorit(15);
-		if( !walk && !uitem)
+		if(ice)
 		{
 			gotoxy(mypos.x,mypos.y);
 			psq(176,1);
@@ -382,18 +391,24 @@ void player::drawstat(int p=-1,int t=-1){
 	//cout<< myturn;
 	
 		gotoxy(statpos.x,statpos.y-2);
-		colorit(12);
-		cout<<"  >";
+
 		colorit(15);
 		if(t%p == myturn)
-		{
-			cout<<"Your turn";
-			colorit(12);
-			cout<<"<     ";
+		
+		{	cout<<" ";
+			colorit(224);
+			cout<<" ";
+			colorit(252);
+			cout<<">Your turn<";
+			colorit(224);
+			cout<<" ";	
 			colorit(15);
 		}
 		else if((t+1)%p == myturn) 
 		{
+			colorit(12);
+			cout<<"  >";
+			colorit(15);
 			cout<<"Next";
 			colorit(12);
 			cout<<"<     ";
@@ -403,7 +418,7 @@ void player::drawstat(int p=-1,int t=-1){
 		else 
 		{
 			gotoxy(statpos.x,statpos.y-2);
-			cout<<"               ";	
+			cout<<"                 ";	
 		}
 	}
 	//draw stat buff de buff
@@ -431,18 +446,28 @@ void player::drawstat(int p=-1,int t=-1){
 	}
 	if( fortune)
 	{
-		colorit (14);
-		cout<<"F ";
+		colorit (10);
+		cout<<"L ";
 	}
 	if(slow)
 	{
 		colorit (4);
-		cout<<"M ";
+		cout<<"S ";
 	}
 	if(doub)
 	{
 		colorit (14);
 		cout<<"x2 ";
+	}
+	if(!walkdrt)
+	{
+		colorit (12);
+		cout<<"> ";
+	}
+	if(protect > 0)
+	{
+		colorit (11);
+		cout<<"P ";
 	}
 	colorit (15);
 	///draw myitem
@@ -616,7 +641,6 @@ void player::ladsnakto(pad *despad){
 		
 	}
 
-
 ////x axis/////
 	pad* renext;
 	pad* renow;
@@ -671,14 +695,25 @@ void player::ladsnakto(pad *despad){
 			// re draw pad////////////
 			if(mypos.x > tdes.x) mypos.x--;
 			else mypos.x++;
-			if(mypos.y != tdes.y && mypos.x == tdes.x) 
-			{
-			mypos.y -=7;
-			}
+			
 			drawme();
 			Sleep(25);
 		}
 		
+		if(mypos.y != tdes.y && mypos.x == tdes.x) 
+		{
+			//delete old
+			gotoxy(mypos.x,mypos.y);
+			psq(0,1);
+			gotoxy(mypos.x,mypos.y-1);
+			psq(0,1);
+			gotoxy(mypos.x,mypos.y-2);
+			psq(0,1);
+			//delete old
+			mypos.y -=7;
+			drawme();
+			Sleep(25);
+		}
 		if(renow->num > despad->num) {
 		 	renext--;
 			renow--;	
@@ -828,14 +863,15 @@ void player::gotopad(int n){
 	}
 	if(myPad->linktopad !=0)
 	{
-
+		if(myPad->linktopad > myPad->num) PlaySound(TEXT("sound/ladder.wav"),NULL,SND_SYNC);
+		else PlaySound(TEXT("sound/snake.wav"),NULL,SND_SYNC);
 		pad * temp= myPad+(myPad->linktopad-myPad->num);
 		ladsnakto(temp);
 		myPad=temp;
 	}
 	if(myPad->type =='T')
 	{
-
+		PlaySound(TEXT("sound/snake.wav"),NULL,SND_SYNC);
 		pad *temp = myPad;
 			if(temp->num < maxpad)temp--;
 			while(temp->pos.x != myPad->pos.x &&temp->num>1)
@@ -843,11 +879,16 @@ void player::gotopad(int n){
 				temp--;
 			}
 			if(temp->pos.y!= myPad->pos.y)ladsnakto(temp);
-		myPad=temp;
 		myPad->type ='N';
+		myPad->drawpad(0);
+		myPad=temp;
+		
 	}
 	getitem(0);
+	
 	if(myPad->type =='R' && rand){
+		PlaySound(TEXT("sound/randpad.wav"),NULL,SND_SYNC);
+		guide(3,statpos.y-2);
 	position randpos(170,statpos.y+4);
 	randomevent(randpos,this);
 	}
@@ -861,11 +902,17 @@ void player::useitem(int i,map & m){
 	{
 		player* p=this;
 		if(myitem[i-1]->type == 'T') 
-		{			
+		{	
+			guide(4,statpos.y-2);		
 			p = chtarget(m);
 		} 
+		if(p != 0)
+		{
+		
 		myitem[i-1]->useme(p,this,myPad);
 		myitem.erase(myitem.begin()+i-1);
+		}
+		else guide(5,statpos.y-2);
 		drawstat();
 	}
 }
@@ -878,12 +925,15 @@ void player::useitem(int i,map & m){
 }*/
 ///////////////////////////////////////////////////////////////////////
 void player::reset(){
-	if(randp)
-	{
-		walk= true;			//walkdrt= true;
-		uitem = true;
-	}
+	walk= true;			//walkdrt= true;
+	uitem = true;
 	if(protect >0)protect--;
+	if(!rice) ice=true;
+	if(!rwalk) walk=true;
+	if(!ruitem) uitem=true;
+	rice=false;
+	rwalk=false;
+	ruitem=false;
 	randp =true;
 	
 }
@@ -961,6 +1011,7 @@ void pad::drawpad(int last=0){
 	psq(pcl,3.5);
 	//Sleep(100);
 	colorit(pcl);
+	if(type == 'T') colorit(207);
 	if(num<10) cout<<"0";
 	cout<<num;
 	//Sleep(100);
@@ -1268,7 +1319,7 @@ void map::upPlayStat(int t){
 	{
 		myplayer[i].drawstat(myplayer.size(),t);
 	}
-
+	guide(1,pads[0].pos.y+4);
 }
 
 void map::spawnitem(){
@@ -1283,7 +1334,7 @@ void map::spawnitem(){
 			
 		}
 		
-		for(int i=0;i< (maxpad/10);i++)
+		for(int i=0;i< (maxpad/4);i++)
 		{
 			if(numpad.size()>0)
 			{	
@@ -1315,7 +1366,7 @@ void map::spawnitem(){
 void pad::spawnitem(int id){
 	//cout<<"pawnitem\n";
 	onpadItem = &itemlist[id];
-	int r=200;
+	int r=100;
 	position p=posItemPad(pos);//
 	//bilnk action
 	gotoxy(p.x,p.y);
@@ -1431,7 +1482,7 @@ int player::rolldice(map & m){
 	
 	position p= m.pads[0].pos;
 	p.x=150;
-	p.y= p.y+7;
+	p.y= p.y+8;
 	int dice;
 	int c=getch();
 			////god mode////
@@ -1564,12 +1615,16 @@ player* player::chtarget(map & m)
 	p.y= p.y+6;
 	p.x = 170;
 	vector<player*> plist;
+	
 	for(int i=0;i<m.myplayer.size();i++)
 	{
 		if(m.myplayer[i].num != num && m.myplayer[i].protect ==0) 
 		plist.push_back(&m.myplayer[i]);
 	}
-		for(int i=0;i<plist.size();i++)
+	
+	if(plist.size()==0) return 0;
+	
+	for(int i=0;i<plist.size();i++)
 	{
 		plist[i]->drawme(p.x+(i*6),p.y+6);
 	}
@@ -1578,41 +1633,34 @@ player* player::chtarget(map & m)
 	char comd;
 	while(comd !=13)
 	{
-		for(int i=0;i<plist.size();i++)
+		for(int i=0;i<plist.size();i++)// delete arrow
 		{
-			gotoxy(p.x+(i*6),p.y+3);
-			colorit(12);
+	
+			gotoxy(p.x+(i*6)-1,p.y+5);
 			cout<<" ";
-			colorit(15);
+			gotoxy(p.x+(i*6)+2,p.y+5);
+			cout<<" ";
+
 		}
-		gotoxy(p.x+(ch*6),p.y+3);
+		///////////// draw arrow
+		gotoxy(p.x+(ch*6)-1,p.y+5);
 		colorit(12);
-		cout<<"v";
+		cout<<">";
+		gotoxy(p.x+(ch*6)+2,p.y+5);
+		cout<<"<";
 		colorit(15);
+		////////////////////
 		comd=getch();
+		if(comd == 27)return 0;
 		if(comd =='a')ch--;
 		else if(comd == 'd')ch++;
 			PlaySound(TEXT("sound/menu.wav"),NULL,SND_SYNC);
 		ch= (plist.size()+ch)%plist.size();
 		
 	}
+	PlaySound(TEXT("sound/confirm.wav"),NULL,SND_SYNC);
 	/////clr screen//////
-	for(int i=0;i<plist.size();i++)
-		{
-			for(int j=0;j<3;j++)
-			{
-			gotoxy(p.x+(i*6),p.y+j);
-			colorit(12);
-			cout<<"  ";
-			colorit(15);
-			}
-		}
-		
-	for(int j=0;j<4;j++)
-	{
-		gotoxy(p.x,p.y+3+j);
-		psq(0,21);
-	}
+	guide(0,m.pads[0].pos.y+4);
 
 	return plist[ch];
 }
@@ -1625,9 +1673,9 @@ void item::useme(player *tar,player*me,pad*p )
 		for(int i=0;i< 3;i++)
 		{
 			gotoxy(me->mypos.x,me->mypos.y);
-			psq(162,1);
+			psq(176,1);
 			gotoxy(me->mypos.x,me->mypos.y-1);
-			psq(162,1);
+			psq(176,1);
 
 			Sleep(200);
 			gotoxy(me->mypos.x,me->mypos.y);
@@ -1642,6 +1690,7 @@ void item::useme(player *tar,player*me,pad*p )
 	}
 	else if(this->name =="Ice") 
 	{
+		tar->ice = true;
 		tar->walk = false;
 		tar->uitem = false;
 		PlaySound(TEXT("sound/ice.wav"),NULL,SND_SYNC);
@@ -1649,14 +1698,14 @@ void item::useme(player *tar,player*me,pad*p )
 	}
 	else if(this->name =="Warpscroll")
 	{
-		gotoxy(0,0);
-		cout<<"a ";
+		//gotoxy(0,0);
+		//cout<<"a ";
 		position tPos = me->mypos;
 		pad * tPad = me->myPad;
-		cout<<"b ";
+		//cout<<"b ";
 		me->mypos.x = tar->mypos.x;
 		me->mypos.y = tar->mypos.y;
-		cout<<"c ";
+		//cout<<"c ";
 		tar->mypos.x =  tPos.x;
 		tar->mypos.y =  tPos.y;
 		me->myPad = tar->myPad;
@@ -1682,12 +1731,12 @@ void item::useme(player *tar,player*me,pad*p )
 			psq(0,1);
 			Sleep(200);
 		}
-		
+		PlaySound(TEXT("sound/warp.wav"),NULL,SND_SYNC);
 		player* tplay;
 		for(int i=0;i<2;i++)
 		{
 			if(i==0)tplay = me;
-			else if(i ==1)tplay = tar;
+			else if(i == 1)tplay = tar;
 			position des(tplay->myPad->pos.x+2+((tplay->num-1)*4),tplay->myPad->pos.y-2);
 			while(tplay->mypos.x != des.x)
 			{
@@ -1710,10 +1759,11 @@ void item::useme(player *tar,player*me,pad*p )
 						}
 					}
 				}
+
 				if(tplay->mypos.x > des.x)tplay->mypos.x--;
 				else tplay->mypos.x++;
 				tplay->drawme();
-				Sleep(25);
+				Sleep(25);//25
 			}
 		}
 
@@ -1721,30 +1771,42 @@ void item::useme(player *tar,player*me,pad*p )
 	else if(name =="Block")
 	{
 		tar->walk = false;
+		PlaySound(TEXT("sound/debuff.wav"),NULL,SND_SYNC);
+	} 
+	else if(name =="Lock")
+	{
+		tar->uitem = false;
+		PlaySound(TEXT("sound/debuff.wav"),NULL,SND_SYNC);
 	} 
 	else if(name =="Double")
 	{
 		tar->doub = true;
+		PlaySound(TEXT("sound/buff.wav"),NULL,SND_SYNC);
 	} 
 	else if(name =="Mug")
 	{
 		tar->slow = true;
+		PlaySound(TEXT("sound/debuff.wav"),NULL,SND_SYNC);
 	} 
 	else if(name =="Trap")
 	{
 		if(me->myPad->type == 'N')
 		{
+			PlaySound(TEXT("sound/trap.wav"),NULL,SND_SYNC);
 			me->myPad->type = 'T';
+			me->myPad->drawpad();
 		}
 		
 	} 
 	else if(name =="Fortune")
 	{
-		tar->fortune = true;
+		me->fortune = true;
+		PlaySound(TEXT("sound/buff.wav"),NULL,SND_SYNC);
 	}
 	else if(name =="Reverse")
 	{
 		tar->walkdrt = false;
+		PlaySound(TEXT("sound/debuff.wav"),NULL,SND_SYNC);
 	}
 
 	tar->drawme();
@@ -1903,7 +1965,7 @@ void randomevent(position &p,player*me){
 	    	}
 	    	i= rand()%8+1;
 	    	drawevent(p,i);
-	    	Sleep(500);
+	    	Sleep(50);
 
 		}
 		drawevent(p,i);
@@ -1913,60 +1975,89 @@ void randomevent(position &p,player*me){
 	{
 		case 1:
 		me->gotopad(rand()%9+1);
+		PlaySound(TEXT("sound/ladder.wav"),NULL,SND_SYNC);
 		break;
 		
 		case 2:
 		me->gotopad(-(rand()%9+1));
+		PlaySound(TEXT("sound/snake.wav"),NULL,SND_SYNC);
 		break;
 		
-		case 4:
+		case 4://l
 		temp = me->myPad;
 		if(temp->num < me->maxpad)temp++;
 		while(temp->pos.x!= me->myPad->pos.x &&temp->num < me->maxpad-1)
 		{
 			temp++;
 		}
-		if(temp->pos.y!= me->myPad->pos.y)me->ladsnakto(temp);
+		if(temp->pos.y!= me->myPad->pos.y)
+		{
+			PlaySound(TEXT("sound/ladder.wav"),NULL,SND_SYNC);
+			me->ladsnakto(temp);	
+		}
+		me->myPad= temp;
+		me->getitem(0);
 		break;
 		
-		case 3:
+		case 3://s
 			temp = me->myPad;
 			if(temp->num < me->maxpad)temp--;
 			while(temp->pos.x != me->myPad->pos.x &&temp->num>1)
 			{
 				temp--;
 			}
-			if(temp->pos.y!= me->myPad->pos.y)me->ladsnakto(temp);
+			if(temp->pos.y!= me->myPad->pos.y)
+			{
+				PlaySound(TEXT("sound/snake.wav"),NULL,SND_SYNC);
+				me->ladsnakto(temp);	
+			}
+			me->myPad= temp;
+			me->getitem(0);
 			break;
+			
 		case 5://I(green) randitem
 			me->getitem(&itemlist[randitem()]);
+			PlaySound(TEXT("sound/pick.wav"),NULL,SND_SYNC);
 			break;
 			
 		case 6://I(red)
 			if(me->myitem.size()>0)
 			{
+				PlaySound(TEXT("sound/snake.wav"),NULL,SND_SYNC);
 				t=rand()%me->myitem.size();
 		 		me->myitem.erase(me->myitem.begin()+t);
 			}
 			break;
 			
 		case 7://de buf
-			t=rand()%4;
+			t=rand()%5;
 				switch(t){
 					case 0:
 						me->walkdrt = false;
 						break;
 					case 1:
 						me->uitem= false;
+						me->ruitem=true;
 						break;
 					case 2:
 						me->walk = false;
+						me->rwalk=true;
 						break;
 					case 3:
+						me->ice=true;
 						me->walk = false;
 						me->uitem= false;
+						me->rice=true;
+						me->rwalk=true;
+						me->ruitem=true;
+						PlaySound(TEXT("sound/ice.wav"),NULL,SND_SYNC);
 						break;
+					case 4:
+						me->slow=true;
+						break;
+						
 				}
+				if(t != 3)PlaySound(TEXT("sound/debuff.wav"),NULL,SND_SYNC);
 			break;
 		case 8://buf
 			t=rand()%3;
@@ -1976,19 +2067,89 @@ void randomevent(position &p,player*me){
 						break;
 					case 1:
 						me->protect +=2;
+							for(int i=0;i< 3;i++)
+							{
+								gotoxy(me->mypos.x,me->mypos.y);
+								psq(176,1);
+								gotoxy(me->mypos.x,me->mypos.y-1);
+								psq(176,1);
+					
+								Sleep(200);
+								gotoxy(me->mypos.x,me->mypos.y);
+								psq(0,1);
+								gotoxy(me->mypos.x,me->mypos.y-1);
+								psq(0,1);
+								me->drawme();
+								Sleep(200);
+							}	
+						PlaySound(TEXT("sound/shield.wav"),NULL,SND_SYNC);
+						
 						break;
 					case 2:
 						me->fortune = true;
 						break;
 
 				}
+				if(t != 2)PlaySound(TEXT("sound/buff.wav"),NULL,SND_SYNC);
 			break;
 	}
+	me->drawme();
 	me->drawstat();
 	Sleep(1000);
 	drawevent(p,0);
 }
 
+void guide(int comd,int y)
+{
+	int x=141;
+	//y+=1;
+	for(int i=0;i<15;i++)//clr
+		{
+		gotoxy(x+1,y+1+i);
+		psq(0,35);
+		}
 
+	switch(comd){
+		case 0://clr
+		for(int i=0;i<15;i++)
+		{
+		gotoxy(x+1,y+1+i);
+		psq(0,35);
+		}
+		break;
+		case 1://clr
+		gotoxy(x+18,y+6);
+		cout<<"Press \"Space bar\" to roll the dice";
+		gotoxy(x+18,y+8);
+		cout<<"      Press 1-4 to use item ";
+		gotoxy(x+16,y+9);
+		cout<<"(Press \"Space bar\" to avoid using item)  ";
+		break;
+		case 2://roll dice
+		gotoxy(x+8,y+2);
+		cout<<"What number do you want ?(Press \"Space bar\" to stop)";
+		break;
+		case 3://roll dice
+		gotoxy(x+8,y+2);
+		cout<<"              Press \"Space bar\" to stop";
+		break;
+		case 4://ch tar
+		gotoxy(x+10,y+2);
+		cout<<"                 Chosse your target.";
+		gotoxy(x+10,y+3);
+		cout<<"             Press \"Enter\" to confirm";
+		gotoxy(x+18,y+7);
+		cout<<"A <-";
+		gotoxy(x+50,y+7);
+		cout<<"-> D";
+		break;
+		case 5://no tar
+		gotoxy(x+8,y+2);
+		cout<<"                 No target available.";
+		Sleep(500);
+		guide(0,y-1);
+		break;
+	}
+}
 
 

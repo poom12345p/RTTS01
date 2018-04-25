@@ -51,4 +51,15 @@ void gotoxy(int x, int y)
  void colorit(int col){//12=red, 15=white---------------->this.colorit(12);  this.colorit(15);
         SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE ), col );
 }
-
+void setcursor(bool visible, DWORD size) // set bool visible = 0 - invisible, bool visible = 1 - visible
+{
+	HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
+	if(size == 0)
+	{
+		size = 20;	// default cursor size Changing to numbers from 1 to 20, decreases cursor width
+	}
+	CONSOLE_CURSOR_INFO lpCursor;	
+	lpCursor.bVisible = visible;
+	lpCursor.dwSize = size;
+	SetConsoleCursorInfo(console,&lpCursor);
+}

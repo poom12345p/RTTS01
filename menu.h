@@ -4,24 +4,12 @@
 #include<string>
 #include<cstring>
 #include<iomanip>
-#include "func.h"
-#include "mmsystem.h"
+//#include "func.h"
 using namespace std;
 
-
-
-class bignamegame;
-
-class bignamegame{
-		public:
-		void shownamegame(int sx,int sy);
-		
-	};
-		
-		
-		
-		void  bignamegame::shownamegame(int sx,int sy){
-	int n=11,pcolor[n+1]={17,34,85,102,119,153,170,187,204,221,236,255},rcolor=rand()%n;
+	
+void shownamegame(int sx,int sy){
+	int n=11,pcolor[n+1]={17,34,85,102,119,153,170,187,204,221,238,255},rcolor=rand()%n;
 		// Road //
 		{
 	
@@ -156,12 +144,12 @@ class bignamegame{
 		{
 			colorit(pcolor[rcolor]);
 			gotoxy(sx,sy);
-			cout<<"ttttttt";
+			cout<<"       ";
 			
 			for(int ro=sy+1;ro < sy+5;ro++)
 			{
 				gotoxy(sx+2,ro);
-				cout<<"0.4";
+				cout<<"   ";
 			}
 		}
 			// H //
@@ -171,13 +159,13 @@ class bignamegame{
 			rcolor=rand()%n;	
 			colorit(pcolor[rcolor]);
 			gotoxy(sx,sy+2);
-			cout<<"ttthhtt";
+			cout<<"       ";
 		for(int ro=sy;ro < sy+5;ro++){
 		
 				gotoxy(sx,ro);
-				cout<<". ";
+				cout<<"  ";
 				gotoxy(sx+5,ro);
-				cout<<". ";
+				cout<<"  ";
 			}	
 			
 			}
@@ -207,7 +195,7 @@ class bignamegame{
 			//  S // 
 			sx+=10;
 			{
-				colorit(pcolor[5]);
+				colorit(pcolor[7]);
 				gotoxy(sx,sy);
 				cout<<"555555";
 				gotoxy(sx,sy+1);
@@ -224,7 +212,7 @@ class bignamegame{
 			{
 				for(int i=sy;i< sy+5;i++)
 				{
-				colorit(pcolor[5]);
+				colorit(pcolor[7]);
 				gotoxy(sx,i);
 				cout<<"55";
 				}
@@ -242,7 +230,7 @@ class bignamegame{
 			// Y //
 			sx+=10;
 			{
-				colorit(pcolor[5]);
+				colorit(pcolor[7]);
 				gotoxy(sx,sy);
 				cout<<"55";
 				gotoxy(sx+8,sy);
@@ -262,16 +250,6 @@ class bignamegame{
 				
 			}			
 		}
-		
-			/// krop //
-		{
-			
-			
-			
-		}
-		
-		
-			}
-	
-		
-	
+		colorit(15);
+}
+
