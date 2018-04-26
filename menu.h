@@ -5,10 +5,11 @@
 #include<cstring>
 #include<iomanip>
 //#include "func.h"
+#include "mmsystem.h"
 using namespace std;
-
-	
-void shownamegame(int sx,int sy){
+		
+		
+		void  shownamegame(int sx,int sy){
 	int n=11,pcolor[n+1]={17,34,85,102,119,153,170,187,204,221,238,255},rcolor=rand()%n;
 		// Road //
 		{
@@ -144,12 +145,12 @@ void shownamegame(int sx,int sy){
 		{
 			colorit(pcolor[rcolor]);
 			gotoxy(sx,sy);
-			cout<<"       ";
+			cout<<"ttttttt";
 			
 			for(int ro=sy+1;ro < sy+5;ro++)
 			{
 				gotoxy(sx+2,ro);
-				cout<<"   ";
+				cout<<"0.4";
 			}
 		}
 			// H //
@@ -159,13 +160,13 @@ void shownamegame(int sx,int sy){
 			rcolor=rand()%n;	
 			colorit(pcolor[rcolor]);
 			gotoxy(sx,sy+2);
-			cout<<"       ";
+			cout<<"ttthhtt";
 		for(int ro=sy;ro < sy+5;ro++){
 		
 				gotoxy(sx,ro);
-				cout<<"  ";
+				cout<<". ";
 				gotoxy(sx+5,ro);
-				cout<<"  ";
+				cout<<". ";
 			}	
 			
 			}
@@ -250,6 +251,88 @@ void shownamegame(int sx,int sy){
 				
 			}			
 		}
-		colorit(15);
-}
-
+		
+		
+		
+		
+			}
+	
+		
+	void showkrop(int sx,int sy,int ex,int ey){sx-=5;
+	int n=11,pcolor[n+1]={17,34,85,102,119,153,170,187,204,221,238,255},color[2],i=0,j=0;
+		color[0]=rand()%n;
+		color[1]=rand()%n;
+		
+		while( i < 8 ){
+		
+		if(color[0] == color[1]){
+			color[1]=rand()%n;
+		}else{
+			i=15;
+		}
+		}					
+			gotoxy(sx,sy);
+			for(int i=sy;i <= ey;i++){
+				gotoxy(sx,i);
+				colorit(pcolor[color[j]]);
+				cout<<" ";j++;j=j%2;colorit(pcolor[color[j]]);cout<<" ";				
+			}
+			gotoxy(ex,sy);
+			for(int i=sy;i <= ey;i++){
+				gotoxy(ex,i);
+			colorit(pcolor[color[j]]);
+				cout<<" ";j++;j=j%2;colorit(pcolor[color[j]]);cout<<" ";
+				
+			}
+			gotoxy(sx,ey);
+			for(int i=sx-1;i <= ex;i++){
+				colorit(pcolor[color[j]]);
+				cout<<" ";
+				j++;
+				j=j%2;
+			}
+		gotoxy(sx,sy);
+			for(int i=sx-1;i <= ex;i++){
+				colorit(pcolor[color[j]]);
+				cout<<" ";
+				j++;
+				j=j%2;
+			}
+	}
+	
+	
+	void showkrop2(int sx,int sy,int ex,int ey){sx-=5;
+	int n=11,pcolor[n+1]={187},color[2],i=0,j=0;
+		color[0]=0;
+		color[1]=color[0];
+						
+			gotoxy(sx,sy);
+			for(int i=sy;i <= ey;i++){
+				gotoxy(sx,i);
+				colorit(pcolor[color[j]]);
+				cout<<" ";j++;j=j%2;colorit(pcolor[color[j]]);cout<<" ";				
+			}
+			gotoxy(ex,sy);
+			for(int i=sy;i <= ey;i++){
+				gotoxy(ex,i);
+			colorit(pcolor[color[j]]);
+				cout<<" ";j++;j=j%2;colorit(pcolor[color[j]]);cout<<" ";
+				
+			}
+			gotoxy(sx,ey);
+			for(int i=sx-1;i <= ex;i++){
+				colorit(pcolor[color[j]]);
+				cout<<" ";
+				j++;
+				j=j%2;
+			}
+		gotoxy(sx,sy);
+			for(int i=sx-1;i <= ex;i++){
+				colorit(pcolor[color[j]]);
+				cout<<" ";
+				j++;
+				j=j%2;
+			}
+	}
+	
+	

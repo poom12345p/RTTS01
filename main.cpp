@@ -241,28 +241,35 @@ int showmeneu(){
 	{
 		system("cls");
 		colorit(15);
-		gotoxy(20,2);	
+		gotoxy(80,15);	
 		cout<<"START";
-		gotoxy(20,3);
+		gotoxy(80,17);
 		cout<<"HOW TO PLAY";
-		gotoxy(20,4);
+		gotoxy(80,19);
 		cout<<"EXIT";
-		gotoxy(20,6);
+		gotoxy(80,23);
 		cout<<"w->up    s->down  Enter->Submit";
+	
+		shownamegame(55,6);
+		showkrop(55,4,165,12);
+	
 		switch(chosse)
 		{
 			case 0:
-			gotoxy(19,2);
+			showkrop2(83,14,86,16);
+			gotoxy(80,15);
 			colorit(199);	
 			cout<<">START";
 			break;
 			case 1:
-			gotoxy(19,3);
+			showkrop2(83,16,92,18);
+			gotoxy(80,17);
 			colorit(199);	
 			cout<<">HOW TO PLAY";
 			break;
 			case 2: 
-			gotoxy(19,4);
+			showkrop2(83,18,85,20);
+			gotoxy(80,19);
 			colorit(199);	
 			cout<<">EXIT";
 			break;
@@ -281,6 +288,7 @@ int showmeneu(){
 	return chosse;
 	
 }
+
 
 map cremap(){
 	int max,ppl,li,rd;
