@@ -5,9 +5,13 @@
 #include<cstdlib>
 #include "game.h"
 #include <algorithm> 
+#include "winscreen.h"
+#include "menu.h"
 using namespace std;
 
-int play(map &mymap){
+player* play(map &mymap){
+
+	setcursor(0,0);	
 	int turn=0;
 	//int spawnitem =0;
 	bool spawnitem=false;
@@ -36,7 +40,7 @@ int play(map &mymap){
 	    }*/
 	    int act =2;
 	    int play;
-	    //mymap.padgetPlay();
+	    mymap.padgetPlay();
 	    mymap.upPlayStat(turn);
 	    	for(int i=0;i<mymap.myplayer.size();i++)
 		    {
@@ -45,7 +49,7 @@ int play(map &mymap){
 		    		play =i;
 		    	}
 		    }
-		    	
+		
 		    if(mymap.myplayer[play].myitem.size() == 0)
 	    	{
 	    		act--;
@@ -54,29 +58,29 @@ int play(map &mymap){
 			{
 				act--;
 			}
-			
 			if(!mymap.myplayer[play].walk)act--;
+			
 	
 	    while(act != 0)
 	    {
-	    	
+	    	guide(1,mymap.pads[0].pos.y+4);
 	    	key=getch();
 	    	
 		    if(key ==32 && mymap.myplayer[play].walk)/////sapce bar rolldice
 		    { 	
-		    	
+		    	guide(2,mymap.pads[0].pos.y+4);
 				mymap.myplayer[play].gotopad(mymap.myplayer[play].rolldice(mymap));
 				if(mymap.myplayer[play].myPad->num == mymap.maxpad)
 				{	
-					return play;
-					Sleep(300);
-					break;
+					PlaySound(TEXT("sound/win1.wav"),NULL,SND_SYNC);
+					return &mymap.myplayer[play];
 				}
 		    	
 		    	mymap.padgetPlay();
 		    	key =0;
 		    	act--;
 		    	mymap.myplayer[play].walk=false;
+		    	mymap.upPlayStat(turn);
 		    	continue;
 		    	
 		    }
@@ -89,12 +93,24 @@ int play(map &mymap){
 
 		    	if(mymap.myplayer[play].myitem.size() >=u)
 		    	{
+		    		PlaySound(TEXT("sound/confirm.wav"),NULL,SND_SYNC);
 		    		mymap.myplayer[play].useitem(u,mymap);
+					act--;
+					mymap.myplayer[play].uitem  = false;
+					mymap.padgetPlay();
+					mymap.upPlayStat(turn);
 				}
-				act--;
-				mymap.myplayer[play].uitem  = false;
-				mymap.padgetPlay();
+				else
+				{
+					guide(6,mymap.pads[0].pos.y+4);
+				}
+				
 			}
+			else if(mymap.myplayer[play].myitem.size() == 0 && u<=4 && u>0 )
+			{
+				guide(6,mymap.pads[0].pos.y+4);
+			}
+			
 			
 		}
 		mymap.myplayer[play].reset();
@@ -104,23 +120,24 @@ int play(map &mymap){
 	   //mymap.update();
 	}
 }
-/*void crechar(map &mymap){
-	mymap.myplayer.push_back(player(1,"P1",192,&mymap.pads[0],mymap.maxpad));
-	mymap.myplayer.push_back(player(2,"P2",16,&mymap.pads[0],mymap.maxpad));
-	mymap.myplayer.push_back(player(3,"P3",208,&mymap.pads[0],mymap.maxpad));
-	mymap.myplayer.push_back(player(4,"P4",160,&mymap.pads[0],mymap.maxpad));
-}*/
+
 void character(int num,map &mymap,int l,vector<string> face,vector<int> &color_f, vector<int> &color_b){
 	
 	int chosse=0;
-		char comd;
+	char comd;
+	for(int y=0;y<1;y++){ for(int i=0;i<32;i++){ gotoxy(i+l,y);psq(128,0.5); } }
+		for(int y=18;y<19;y++){ for(int i=0;i<32;i++){ gotoxy(i+l,y);psq(128,0.5); } }
+		for(int y=0;y<19;y++){  gotoxy(l,y);psq(128,0.5); }
+		for(int y=0;y<19;y++){  gotoxy(32+l,y);psq(128,0.5); }
 		while(comd != 13)//Enter key = 13
 		{
 			//system("cls");
 			colorit(11);
 			gotoxy(3+l,2);	
 			cout<<"Please select your character";
-			gotoxy(17+l,8);
+			gotoxy(5+l,12);
+			gotoxy(80,40); colorit(15); cout << "PLEASE SELECT YOUR FACE";
+			gotoxy(15+l,8);
 			colorit(15);		
 			chosse = (10 + chosse)%10; 
 			psq(240,0.5,face[chosse][0]);
@@ -128,7 +145,10 @@ void character(int num,map &mymap,int l,vector<string> face,vector<int> &color_f
 			comd = getch();	
 			if(comd =='a')chosse--;
 			else if(comd == 'd')chosse++;
+			PlaySound(TEXT("sound/menu.wav"),NULL,SND_SYNC);
 		}
+		PlaySound(TEXT("sound/confirm.wav"),NULL,SND_SYNC);
+		
 		string p_f = face[chosse];
 		comd = getch();chosse = 0;	
 		while(comd != 13)//Enter key = 13
@@ -137,44 +157,52 @@ void character(int num,map &mymap,int l,vector<string> face,vector<int> &color_f
 			colorit(11);
 			gotoxy(3+l,2);	
 			cout<<"Please select your character";
-			gotoxy(17+l,8);
+			gotoxy(80,40); psq(1,15);
+			gotoxy(80,40); colorit(15); cout << "PLEASE SELECT YOUR FACE COLOR";
+			gotoxy(15+l,8);
 			chosse = (color_f.size() + chosse)%color_f.size(); 
 			psq(color_f[chosse],0.5,p_f[0]);
 			psq(color_f[chosse],0.5,p_f[1]);
 			comd = getch();	
+			PlaySound(TEXT("sound/menu.wav"),NULL,SND_SYNC);
 			if(comd =='a')chosse--;
 			else if(comd == 'd')chosse++;
 		}
+		PlaySound(TEXT("sound/confirm.wav"),NULL,SND_SYNC);
 		int c_f = color_f[chosse];
+		gotoxy(80,40); psq(1,15);
 		color_f.erase(color_f.begin()+chosse);
-		comd = getch();chosse = 0;
+		comd = getch();
+		chosse = 0;
 		while(comd != 13)//Enter key = 13
 		{
-			gotoxy(17+l,9);
+			gotoxy(80,40); psq(1,15);
+			gotoxy(80,40); colorit(15); cout << "PLEASE SELECT YOUR BODY COLOR";
+			gotoxy(15+l,9);
 			chosse = (color_b.size() + chosse)%color_b.size();
 			psq(color_b[chosse],0.5,p_f[0]);
 			psq(color_b[chosse],0.5,p_f[1]);
-			comd = getch();	
+			comd = getch();		
+			PlaySound(TEXT("sound/menu.wav"),NULL,SND_SYNC);
 			if(comd =='a')chosse--;
 			else if(comd == 'd')chosse++;
 		}
+		PlaySound(TEXT("sound/confirm.wav"),NULL,SND_SYNC);
 		int c_b = color_b[chosse];
 		color_b.erase(color_b.begin()+chosse);
 		string name;
 		gotoxy(5+l,12);
 		colorit(11);
 		cout << "Please input your name: " ;
-		gotoxy(5+l,13); ;
-		comd = getch(); 
-		//while(comd != 13){
-			cin.ignore();
-			getline(cin,name);//cin >> name;
-			comd = getch();
-		//}
+		gotoxy(13+l,13);
+		cin.ignore();
+		getline(cin,name);
+		gotoxy(5+l,12); psq(1,12);
+		gotoxy(3+l,2); psq(1,14);
+		gotoxy(14+l,2); cout<<"P"<<num;
+		PlaySound(TEXT("sound/confirm.wav"),NULL,SND_SYNC);
+
 		mymap.myplayer.push_back(player(num,name,c_f,c_b,&mymap.pads[0],mymap.maxpad,p_f));
-		//mymap.myplayer.push_back(player(2,"P2",16,&mymap.pads[0],mymap.maxpad));
-		//mymap.myplayer.push_back(player(3,"P3",208,&mymap.pads[0],mymap.maxpad));
-		//mymap.myplayer.push_back(player(4,"P4",160,&mymap.pads[0],mymap.maxpad));
 }
 
 void botton(int c,int x,int y,string text,int n){
@@ -184,6 +212,8 @@ void botton(int c,int x,int y,string text,int n){
 }
 
 int crechar(map &mymap){
+
+	setcursor(0,0);	
 	string f[10] = {"><","##","^^","**","--","++","$$","!!","==","::"};
 	int cf[23] = {27,15,42,46,59,63,79,89,95,106,116,160,180,188,192,207,208,220,225,236,240,245,252};
 	int cb[16] = {0,17,34,51,68,85,102,119,136,153,170,187,204,221,238,255};
@@ -192,27 +222,36 @@ int crechar(map &mymap){
 	for(int i=0;i<23;i++){color_f.push_back(cf[i]);}
 	for(int i=0;i<16;i++){color_b.push_back(cb[i]);}
 	
-	int chosse = 0;		char comd;
+	int chosse = 0;		
+	char comd;
 	int num = 0;
 	int lenght = 0;
-	colorit(15);gotoxy(72,32); cout<<"left<-a    d->right  Enter->Submit";
+	colorit(15);gotoxy(72,32); cout<<"left<-A    D->right  Enter->Submit";
+	for(int y=21;y<22;y++){ for(int i=0;i<200;i++){ gotoxy(i,y);psq(170,0.5); } }
+	for(int y=34;y<35;y++){ for(int i=75;i<111;i++){ gotoxy(i,y);psq(221,0.5); } }
+	for(int y=45;y<46;y++){ for(int i=75;i<111;i++){ gotoxy(i,y);psq(221,0.5); } }
+	for(int y=34;y<46;y++){  gotoxy(75,y);psq(221,0.5); }
+	for(int y=34;y<46;y++){  gotoxy(111,y);psq(221,0.5); }
 	while(chosse != 3){
 		while(comd != 13){	
-			botton(144,10,23,"BACK TO MENU",12);
-			botton(176,70,23,"ADD NEW PLAYER",14);
-			botton(128,132,23,"ENTER GAME",10);
+			botton(96,20,23,"BACK TO MENU",12);
+			botton(96,80,23,"ADD NEW PLAYER",14);
+			botton(96,142,23,"ENTER GAME",10);
 			switch(chosse){
-				case 0:botton(199,10,23,"BACK TO MENU",12);break;					
-				case 1:botton(199,70,23,"ADD NEW PLAYER",14);break;
-				case 2:botton(199,132,23,"ENTER GAME",10);break;
-				//case 3:botton(199,132,23,"ENTER GAME",10);break;
+				case 0:botton(199,20,23,"BACK TO MENU",12);break;					
+				case 1:botton(199,80,23,"ADD NEW PLAYER",14);break;
+				case 2:botton(199,142,23,"ENTER GAME",10);break;
 				default:break;	
 			}
 			comd = getch();
 			if(comd =='a')chosse--;
 			else if(comd == 'd')chosse++;
+			if(comd == 13) break;
+			PlaySound(TEXT("sound/menu.wav"),NULL,SND_SYNC);
 			chosse = (3+(chosse))%3;	
 		}
+		
+		PlaySound(TEXT("sound/confirm.wav"),NULL,SND_SYNC);
 		if(num>=2){ 
 			if(chosse==2){ chosse=3; }
 			if(num>=4){ if(chosse==1){ chosse = 4; } } 
@@ -225,63 +264,89 @@ int crechar(map &mymap){
 			return 0;	
 		}
 		else if(chosse == 1){ num++; character(num,mymap,lenght,face,color_f,color_b); lenght+=50; }
-		else if(chosse == 2){ gotoxy(75,45); colorit(15); cout << "PLEASE ADD NEW MORE PLAYER";	}
+		else if(chosse == 2){ gotoxy(80,40); colorit(15); cout << "PLEASE ADD NEW MORE PLAYER";	}
 		else if(chosse == 3){ system("cls"); return 1; }
-		else if(chosse == 4){ gotoxy(75,45); colorit(15); cout << "CAN'T ADD NEW MORE PLAYER"; }
+		else if(chosse == 4){ gotoxy(80,40); colorit(15); cout << "CAN'T ADD NEW MORE PLAYER"; }
 		//gotoxy(0,0);cout << chosse <<" "<<num;
-		comd = getch(); gotoxy(75,45); psq(1,13);
+		comd = getch(); gotoxy(80,40); psq(1,15);
 	}
-	
 }
 
 int showmeneu(){
+	setcursor(0,0);	
+	int pX=60,pY=10;
 	int chosse=0;
-	char comd;
+	char comd=0;
+	gotoxy(pX+5,6+pY);
+	cout<<"W";
+	gotoxy(pX+5,7+pY);
+	cout<<"^";
+	gotoxy(pX-6,pY+8);
+	psq(160,11);
+	for(int i=0;i<13;i++)
+	{
+		gotoxy(pX-6,pY+8+i);
+		psq(160,1);
+		gotoxy(pX+16,pY+8+i);
+		psq(160,1);
+	}
+	gotoxy(pX-6,pY+20);
+	psq(160,11);
+	gotoxy(pX+5,21+pY);
+	cout<<"v";
+	gotoxy(pX+5,22+pY);
+	cout<<"S";
+	gotoxy(pX-3,25+pY);
+	cout<<"Press \"Enter\" to submit";
 	while(comd != 13)
 	{
-		system("cls");
+		
+		//system("cls");
+		shownamegame(10,6);
+		showkrop(10,4,125,12);
+		
 		colorit(15);
-		gotoxy(80,15);	
-		cout<<"START";
-		gotoxy(80,17);
-		cout<<"HOW TO PLAY";
-		gotoxy(80,19);
-		cout<<"EXIT";
-		gotoxy(80,23);
-		cout<<"w->up    s->down  Enter->Submit";
-	
-		shownamegame(55,6);
-		showkrop(55,4,165,12);
-	
+		gotoxy(pX+3,10+pY);	
+		cout<<" START ";
+		
+		gotoxy(pX,14+pY);
+		cout<<" HOW TO PLAY ";
+		
+		gotoxy(pX+3,18+pY);
+		cout<<" EXIT ";
+		
 		switch(chosse)
 		{
 			case 0:
-			showkrop2(83,14,86,16);
-			gotoxy(80,15);
-			colorit(199);	
-			cout<<">START";
+			gotoxy(pX+3,10+pY);
+			psq(224,0.5);
+			colorit(12);
+			cout<<"START";
+			psq(224,0.5);
 			break;
 			case 1:
-			showkrop2(83,16,92,18);
-			gotoxy(80,17);
-			colorit(199);	
-			cout<<">HOW TO PLAY";
+			gotoxy(pX,14+pY);
+			psq(224,0.5);
+			colorit(12);
+			cout<<"HOW TO PLAY";
+			psq(224,0.5);
 			break;
 			case 2: 
-			showkrop2(83,18,85,20);
-			gotoxy(80,19);
-			colorit(199);	
-			cout<<">EXIT";
+			gotoxy(pX+3,18+pY);
+			colorit(12);	
+			psq(224,0.5);
+			colorit(12);
+			cout<<"EXIT";
+			psq(224,0.5);
 			break;
-			default:break;
+			default:
+			break;
 		}
 		colorit(15);
-		gotoxy(0,0);
 		comd = getch();
 		PlaySound(TEXT("sound/menu.wav"),NULL,SND_SYNC);
 		if(comd =='w')chosse--;
 		else if(comd == 's')chosse++;
-		//cout<<comd;
 		chosse = (3+(chosse))%3;
 	}
 	system("cls");
@@ -289,28 +354,161 @@ int showmeneu(){
 	
 }
 
-
 map cremap(){
 	int max,ppl,li,rd;
-	do{
-	cout<<"input [maxpad] [pad per lv] [number of ladder] [number of randompad] \n";
-	cin>>max;
-	cin>>ppl;
-	cin>>li;
-	cin>>rd;
-	}while(max-2 < li*4 || max-2-(li*4) < rd || ppl > 12 || max<19);
+	//////////////////////////////
+	int pX=60,pY=5;
+	int chosse=0;
+	char comd=0;
+	gotoxy(pX-1,pY);
+	cout<<"Choose map size";
+	gotoxy(pX+5,6+pY);
+	cout<<"W";
+	gotoxy(pX+5,7+pY);
+	cout<<"^";
+	gotoxy(pX-6,pY+8);
+	psq(160,11);
+	for(int i=0;i<17;i++)
+	{
+		gotoxy(pX-6,pY+8+i);
+		psq(160,1);
+		gotoxy(pX+16,pY+8+i);
+		psq(160,1);
+	}
+	gotoxy(pX-6,pY+24);
+	psq(160,11);
+	gotoxy(pX+5,25+pY);
+	cout<<"v";
+	gotoxy(pX+5,26+pY);
+	cout<<"S";
+	gotoxy(pX-3,29+pY);
+	cout<<"Press \"Enter\" to submit";
+	max =30;ppl=6;li=5;rd=6;
+	while(comd != 13)
+	{
+	
+		colorit(15);
+		gotoxy(pX+3,10+pY);	
+		cout<<" Small ";
+		
+		gotoxy(pX+1,14+pY);
+		cout<<" Standard ";
+		
+		gotoxy(pX+3,18+pY);
+		cout<<" Large ";
+		
+		gotoxy(pX,22+pY);
+		cout<<" Costom Map ";
+		
+		switch(chosse)
+		{
+			case 0:
+			gotoxy(pX+3,10+pY);
+			psq(224,0.5);
+			colorit(12);
+			cout<<"Small";
+			psq(224,0.5);
+			max =30;ppl=6;li=5;rd=6;
+			break;
+			case 1:
+			gotoxy(pX+1,14+pY);
+			psq(224,0.5);
+			colorit(12);
+			cout<<"Standard";
+			max =50;ppl=8;li=8;rd=8;
+			psq(224,0.5);
+			break;
+			case 2: 
+			gotoxy(pX+3,18+pY);
+			colorit(12);	
+			psq(224,0.5);
+			colorit(12);
+			cout<<"Large";
+			max =100;ppl=10;li=10;rd=10;
+			psq(224,0.5);
+			break;
+			case 3: 
+			gotoxy(pX,22+pY);
+			colorit(12);	
+			psq(224,0.5);
+			colorit(12);
+			cout<<"Costom Map";
+			psq(224,0.5);
+			break;
+			default:
+			break;
+		}
+		colorit(15);
+		comd = getch();
+		PlaySound(TEXT("sound/menu.wav"),NULL,SND_SYNC);
+		if(comd =='w')chosse--;
+		else if(comd == 's')chosse++;
+		chosse = (4+(chosse))%4;
+	}
+	
+	if(chosse == 3)
+	{
+		
+		system("cls");
+		do{	int pX =60,pY=5;
+			
+			gotoxy(pX,pY);
+			for(int i=0;i<12;i++)
+			{
+				gotoxy(pX,pY+i);
+				psq(0,25);
+			}
+				if(max-2 < li*4 || max-2-(li*4) < rd || ppl > 12 || max<19)
+			{
+				gotoxy(pX+10,pY-2);
+				colorit(12);
+				
+				cout<<"*You input wrong data.*";
+				colorit(15);
+			}
+			gotoxy(pX,pY);
+			cout<<"How many pads do you want?";
+			gotoxy(pX,++pY);
+			colorit(12);
+			cout<<"> ";
+			colorit(15);
+			cin>>max;
+			pY+=2;
+			gotoxy(pX,pY);
+			cout<<"How many pads do you want per one floor?";
+			gotoxy(pX,++pY);
+			colorit(12);
+			cout<<"> ";
+			colorit(15);
+			cin>>ppl;
+			pY+=2;
+			gotoxy(pX,pY);
+			cout<<"How many snake and ladder pads doyou want?";
+			gotoxy(pX,++pY);
+			cout<<"(number of snake pads = number of  ladder pads)";
+			gotoxy(pX,++pY);
+			colorit(12);
+			cout<<"> ";
+			colorit(15);
+			cin>>li;
+			pY+=2;
+			gotoxy(pX,pY);
+			cout<<"How many srandom pads doyou want? : ";
+			gotoxy(pX,++pY);
+			colorit(12);
+			cout<<"> ";
+			colorit(15);
+			cin>>rd;
+		}while(max-2 < li*4 || max-2-(li*4) < rd || ppl > 12 || max<19);
+		PlaySound(TEXT("sound/menu.wav"),NULL,SND_SYNC);
+	}
+
 	system("cls");
 	SetWindow(250,(max/ppl)*7+30);
 	return map(max,ppl,li,rd);
 }
 
-void winscreen(int w){
-	system("cls");
-	colorit(15);
-	gotoxy(20,2);
-	cout<<"Winner is "<< w+1;
-	getch();
-}
+
 void drawcard(int R,int a)
 {
 	int pX=90,pY=20;
@@ -376,21 +574,16 @@ void drawcard(int R,int a)
 	}
 }
 void playerturn(map &mymap){
-/*	/////////////////////////set player turn//////////////////////////////////
-	vector<int> order;
-	for(int i=0;i<mymap.myplayer.size();i++)
-	{
-		order.push_back(i);
-	}
-	////////random player turn
-	for(int i=0;i<mymap.myplayer.size();i++)
-	{
-		int loc = rand()%order.size();
-		mymap.myplayer[i].myturn=order[loc];
-		order.erase(order.begin()+loc);
-	}
-	//////////////////////////////////////////////////////////////////////////*/
+setcursor(0,0);	
 	int pX=90,pY=20;
+	gotoxy(pX+20,pY-10);
+	cout<<"      Choose your card";
+	gotoxy(pX+20,pY-9);
+	cout<<"(Press \"Enter\" to confirm)";
+	gotoxy(pX-10,pY+5);
+	cout<<"A<-";
+	gotoxy(pX+mymap.myplayer.size()*20+10,pY+5);
+	cout<<"->D";
 	for(int a=0; a<mymap.myplayer.size();a++)
 	{
 		for(int i=0;i<15;i++)
@@ -419,22 +612,15 @@ void playerturn(map &mymap){
 	Sleep(100);
 	int R=0;
 	int c='0';
-	//bool havecard=true;
 	vector<bool>cards;
 	for(int i=0;i<4;i++)
 	cards.push_back(false);
-	//vector<player*> pcc;
 	vector<int>number;
 	for(int i=0;i<mymap.myplayer.size();i++)number.push_back(i);
 	random_shuffle ( number.begin(), number.end() );
-/*	gotoxy(0,0);
-	for(int i=0;i<number.size();i++)
-	{
-		cout<< number[i]<<"  ";
-	}	*/
+
 	for(int i=0;i<mymap.myplayer.size();i++)
 	{
-		//player * p= &mymap.myplayer[i];
 		int ch;
 		char key =0;
 		for(int j=0;j<mymap.myplayer.size();j++)
@@ -451,6 +637,7 @@ void playerturn(map &mymap){
 			
 			mymap.myplayer[i].drawme(pX+10+(ch*20),pY-2);
 			key = getch();
+			PlaySound(TEXT("sound/menu.wav"),NULL,SND_SYNC);
 			/////delete old/////
 			if(key == 13) break;
 			gotoxy(pX+10+(ch*20),pY-2);
@@ -471,28 +658,34 @@ void playerturn(map &mymap){
 			//gotoxy(0,1);
 			//cout<<ch;
 		}
+		PlaySound(TEXT("sound/confirm.wav"),NULL,SND_SYNC);
 		mymap.myplayer[i].myturn = number[ch];
-	/*	gotoxy(0,2);
-		cout<<mymap.myplayer[i].myturn;*/
 		cards[ch]= true;
 		
 	}
+	
 	for(int i=0;i<mymap.myplayer.size();i++)drawcard(number[i]+1,i);
+	PlaySound(TEXT("sound/opencards.wav"),NULL,SND_SYNC);
+	
 	getch();
+	PlaySound(TEXT("sound/confirm.wav"),NULL,SND_SYNC);
 	system("cls");
 } 
  
 int main(){
+
 	srand(time(0));
+	setcursor(0,0);	
 	colorit(15);
-	SetWindow(250,100);
 	int comd ;
 	while(comd !=2)
 	{
+		SetWindow(141,40);
 		comd =showmeneu();
 		//cout<<comd;
 		if(comd==0){
-			int choose, winner;
+			int choose;
+			player* winner;
 				map mymap =cremap();
 				choose = crechar(mymap);
 				if(choose == 1){
@@ -501,7 +694,12 @@ int main(){
 					winner = play(mymap);
 					winscreen(winner);
 				}	
-
+		}
+		else if(comd == 1)
+		{
+			system("cls");
+			htp();
+			system("cls");
 		}
 	}
 	return 0;

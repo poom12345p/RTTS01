@@ -411,14 +411,14 @@ void player::drawstat(int p=-1,int t=-1){
 			colorit(15);
 			cout<<"Next";
 			colorit(12);
-			cout<<"<     ";
+			cout<<"<       ";
 			colorit(15);
 	
 		}
 		else 
 		{
 			gotoxy(statpos.x,statpos.y-2);
-			cout<<"                 ";	
+			cout<<"                  ";	
 		}
 	}
 	//draw stat buff de buff
@@ -905,14 +905,29 @@ void player::useitem(int i,map & m){
 		{	
 			guide(4,statpos.y-2);		
 			p = chtarget(m);
+			if(p != 0)
+			{
+				myitem[i-1]->useme(p,this,myPad);
+				myitem.erase(myitem.begin()+i-1);
+			}
+			else guide(5,statpos.y-2);
 		} 
-		if(p != 0)
-		{
-		
-		myitem[i-1]->useme(p,this,myPad);
-		myitem.erase(myitem.begin()+i-1);
+		else if(myitem[i-1]->type == 'P')
+		{	
+			if(myPad->type =='N')
+			{
+				myitem[i-1]->useme(p,this,myPad);
+				myitem.erase(myitem.begin()+i-1);
+			}
+			else guide(5,statpos.y-2);
+			
 		}
-		else guide(5,statpos.y-2);
+		else if(myitem[i-1]->type == 'S')
+		{
+			myitem[i-1]->useme(p,this,myPad);
+			myitem.erase(myitem.begin()+i-1);
+		}
+		//else guide(5,statpos.y-2);
 		drawstat();
 	}
 }
@@ -925,10 +940,10 @@ void player::useitem(int i,map & m){
 }*/
 ///////////////////////////////////////////////////////////////////////
 void player::reset(){
-	walk= true;			//walkdrt= true;
-	uitem = true;
+	//walk= true;			//walkdrt= true;
+	//uitem = true;
 	if(protect >0)protect--;
-	if(!rice) ice=true;
+	if(!rice) ice=false;
 	if(!rwalk) walk=true;
 	if(!ruitem) uitem=true;
 	rice=false;
@@ -961,12 +976,7 @@ class map{
 };
 
 /////////////////////////////////////////////////////////////////
-/*int pad::posX(){
-	return pos.x;
-}
-int pad::posY(){
-	return pos.y;
-}*/
+
 /////////////////////////////////////////////////////////////////
 void drawstar(position p)
 {
@@ -974,27 +984,29 @@ void drawstar(position p)
 		gotoxy(p.x+4,p.y-6);
 		psq(239,1);
 		gotoxy(p.x+8,p.y-6);
-		psq(0,1);
+		psq(239,1);
 		gotoxy(p.x+12,p.y-6);
 		psq(239,1);
+		
 		gotoxy(p.x+6,p.y-5);
 		psq(239,1);
 		psq(240,1);
 		psq(239,1);
 		gotoxy(p.x+4,p.y-4);
-		psq(0,1);
+		psq(239,1);
 		psq(240,1);
 		psq(239,1);
 		psq(240,1);
-		psq(0,1);
+		psq(239,1);
 		gotoxy(p.x+6,p.y-3);
 		psq(239,1);
 		psq(240,1);
 		psq(239,1);
+		
 		gotoxy(p.x+4,p.y-2);
 		psq(239,1);
 		gotoxy(p.x+8,p.y-2);
-		psq(0,1);
+		psq(239,1);
 		gotoxy(p.x+12,p.y-2);
 		psq(239,1);
 
@@ -1005,20 +1017,15 @@ void pad::drawpad(int last=0){
 	if(num ==1 ||last !=0)pcl=236;
 	gotoxy(pos.x,pos.y);
 	psq(pcl,9);
-	//Sleep(100);
 	gotoxy(pos.x+1,pos.y-1);
-
 	psq(pcl,3.5);
-	//Sleep(100);
 	colorit(pcl);
 	if(type == 'T') colorit(207);
 	if(num<10) cout<<"0";
 	cout<<num;
-	//Sleep(100);
 	colorit(15);
 	if(num>=100)psq(pcl,3);
 	else psq(pcl,3.5);
-	//Sleep(100);
 	if(num== 1)
 	{
 		gotoxy(pos.x+6,pos.y);
@@ -1334,7 +1341,7 @@ void map::spawnitem(){
 			
 		}
 		
-		for(int i=0;i< (maxpad/4);i++)
+		for(int i=0;i< (maxpad/10);i++)
 		{
 			if(numpad.size()>0)
 			{	
@@ -1534,7 +1541,7 @@ int player::rolldice(map & m){
 		psq(224,0.5);	        
 	    Sleep(20);
 		if (_kbhit()==1)
-	    {	
+		{	
 			c=getch();
 			if(c==32)break;
 	    }
@@ -2144,10 +2151,15 @@ void guide(int comd,int y)
 		cout<<"-> D";
 		break;
 		case 5://no tar
-		gotoxy(x+8,y+2);
+		gotoxy(x+8,y+6);
 		cout<<"                 No target available.";
-		Sleep(500);
-		guide(0,y-1);
+		Sleep(800);
+		guide(0,y);
+		case 6://no item
+		gotoxy(x+8,y+6);
+		cout<<"                 This item slot is empty.";
+		Sleep(800);
+		guide(0,y);
 		break;
 	}
 }

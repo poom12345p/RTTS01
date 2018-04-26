@@ -29,6 +29,7 @@ void SetWindow(int Width, int Height)//set window size
     }
 
 
+
 void psq(int c,float i,char p=0){//draw pixel i block,color code c
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleTextAttribute(hConsole,c); 
