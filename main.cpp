@@ -13,6 +13,7 @@ player* play(map &mymap){
 
 	setcursor(0,0);	
 	int turn=0;
+	//int spawnitem =0;
 	bool spawnitem=false;
 	char key;
 	mymap.padgetPlay();
@@ -63,7 +64,39 @@ player* play(map &mymap){
 	    while(act != 0)
 	    {
 	    	guide(1,mymap.pads[0].pos.y+4);
-	    	key=getch();
+	    	if(!mymap.myplayer[play].bot)key=getch();
+	    	else
+	    	{
+	    		Sleep(800);
+	    		int botact =rand()%act;
+	    		if(botact ==0)
+	    		{
+	    			key = 32;
+				}
+				else if(botact ==1)
+				{
+						int randu = rand()%(mymap.myplayer[play].myitem.size());
+						switch(randu)
+						{
+							case 0: 
+							key ='1';
+							break;
+							case 1: 
+							key ='2';
+							break;
+							case 2: 
+							key ='3';
+							break;
+							case 3: 
+							key ='4';
+							break;
+							default:
+							key =32;
+							break;
+						}
+					
+				}
+			}
 	    	
 		    if(key ==32 && mymap.myplayer[play].walk)/////sapce bar rolldice
 		    { 	
@@ -121,7 +154,7 @@ player* play(map &mymap){
 }
 
 void character(int num,map &mymap,int l,vector<string> face,vector<int> &color_f, vector<int> &color_b){
-	cin.ignore();
+	//cin.ignore();
 	int chosse=0;
 	char comd;
 	for(int y=0;y<1;y++){ for(int i=0;i<32;i++){ gotoxy(i+l,y);psq(128,0.5); } }
@@ -193,13 +226,13 @@ void character(int num,map &mymap,int l,vector<string> face,vector<int> &color_f
 		gotoxy(5+l,12);
 		colorit(11);
 		cout << "Please input your name: " ;
-		gotoxy(13+l-1,13);
+		gotoxy(13+l,13);
+		
 		getline(cin,name);
 		gotoxy(5+l,12); psq(1,12);
 		gotoxy(3+l,2); psq(1,14);
 		gotoxy(14+l,2); cout<<"P"<<num;
 		PlaySound(TEXT("sound/confirm.wav"),NULL,SND_SYNC);
-
 		mymap.myplayer.push_back(player(num,name,c_f,c_b,&mymap.pads[0],mymap.maxpad,p_f));
 }
 
@@ -498,7 +531,7 @@ map cremap(){
 			PlaySound(TEXT("sound/confirm.wav"),NULL,SND_SYNC);
 			pY+=2;
 			gotoxy(pX,pY);
-			cout<<"How many srandom pads doyou want? : ";
+			cout<<"How many random pads doyou want? : ";
 			gotoxy(pX,++pY);
 			colorit(12);
 			cout<<"> ";
@@ -506,6 +539,7 @@ map cremap(){
 			cin>>rd;
 			PlaySound(TEXT("sound/confirm.wav"),NULL,SND_SYNC);
 		}while(max-2 < li*4 || max-2-(li*4) < rd || ppl > 12 || max<19);
+		cin.ignore();
 		PlaySound(TEXT("sound/menu.wav"),NULL,SND_SYNC);
 	}
 
@@ -642,7 +676,24 @@ setcursor(0,0);
 		{
 			
 			mymap.myplayer[i].drawme(pX+10+(ch*20),pY-2);
-			key = getch();
+			if(!mymap.myplayer[i].bot)key = getch();
+			else
+			{
+				Sleep(100);
+				int botact =rand()%3;
+				switch(botact)
+						{
+							case 0: 
+							key ='a';
+							break;
+							case 1: 
+							key ='d';
+							break;
+							case 2: 
+							key = 13;
+							break;
+						};
+			}
 			PlaySound(TEXT("sound/menu.wav"),NULL,SND_SYNC);
 			/////delete old/////
 			if(key == 13) break;

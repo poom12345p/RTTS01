@@ -269,6 +269,8 @@ class player{
 	bool rice;
 	bool rwalk;
 	bool ruitem;
+	////
+	bool bot;
 	//////////////////
 	position mypos;
 	int no;
@@ -316,6 +318,12 @@ player::player(int n,string na,int cf,int cb,pad *p,int mp,string f){
 	rice=false;
 	rwalk=false;
 	ruitem=false;
+	
+	bot=false;
+	if(name =="bot")
+	{
+		bot = true;
+	}
 
 }
 /////////////////////////////////////////////////////////////////
@@ -384,7 +392,7 @@ void player::drawstat(int p=-1,int t=-1){
 	else if(no == 2)cout<<"2nd";
 	else if(no == 3)cout<<"3rd";
 	else if(no == 4)cout<<"4th";
-	cout<<"(pad: "<<myPad->num<<")";
+	cout<<"(pad: "<<myPad->num<<") ";
 	drawme(statpos.x,statpos.y+1);
 	if(p !=-1 && t !=-1){
 //	gotoxy(statpos.x-2,statpos.y-2);
@@ -1492,36 +1500,6 @@ int player::rolldice(map & m){
 	p.y= p.y+8;
 	int dice;
 	int c;
-/*	if (_kbhit()==1)
-	{
-			c=getch();
-			////god mode////
-	switch (c)
-	{
-		case 32:
-			//dice= (rand()%6)+1;
-			break;
-		case 113:
-			return 1;
-			break;
-		case 119:
-			return 2;
-			break;
-		case 101:
-			return 3;
-			break;
-		case 114:
-			return 4;
-			break;
-		case 116:
-			return 5;
-			break;
-		case 121:
-			return 6;
-			break;
-	}
-		////god mode////
-	}*/
 	 c='0';
 	vector<int> dicelist;
 	int R=0;
@@ -1544,37 +1522,45 @@ int player::rolldice(map & m){
 		gotoxy(6+(R%35)+p.x,p.y+1);
 		psq(224,0.5);	        
 	    Sleep(20);
-		if (_kbhit()==1)
-		{	
-			c=getch();
-			switch (c)
-			{
-			case 32:
-				//dice= (rand()%6)+1;
-				break;
-				////god mode////
-			case 113:
-				return 1;
-				break;
-			case 119:
-				return 2;
-				break;
-			case 101:
-				return 3;
-				break;
-			case 114:
-				return 4;
-				break;
-			case 116:
-				return 5;
-				break;
-			case 121:
-				return 6;
-				break;
-				////god mode////
-			//if(c==32)break;
-	    	}
-	    }
+	    if(!bot)
+	    {
+			if (_kbhit()==1)
+			{	
+				c=getch();
+				switch (c)
+				{
+				case 32:
+					//dice= (rand()%6)+1;
+					break;
+					////god mode////
+				case 113:
+					return 1;
+					break;
+				case 119:
+					return 2;
+					break;
+				case 101:
+					return 3;
+					break;
+				case 114:
+					return 4;
+					break;
+				case 116:
+					return 5;
+					break;
+				case 121:
+					return 6;
+					break;
+					////god mode////
+				//if(c==32)break;
+		    	}
+		    }
+		}
+		else
+		{
+			int botact=rand()%20;
+			if(botact==0 ) c=32;
+		}
 	    gotoxy(6+(R%35)+p.x,p.y+1);
 		if((1+(R%35)/6)%2==0) psq (32,0.5);
 		else psq (203,0.5);
@@ -1686,7 +1672,23 @@ player* player::chtarget(map & m)
 		cout<<"<";
 		colorit(15);
 		////////////////////
-		comd=getch();
+		if(!bot)comd=getch();
+		else
+		{
+				int botact =rand()%3;
+				switch(botact)
+						{
+							case 0: 
+							comd ='a';
+							break;
+							case 1: 
+							comd ='d';
+							break;
+							case 2: 
+							comd = 13;
+							break;
+						};
+		}
 		if(comd == 27)return 0;
 		if(comd =='a')ch--;
 		else if(comd == 'd')ch++;
@@ -1992,17 +1994,26 @@ void drawevent(position &p,int x){
 
 void randomevent(position &p,player*me){
 	int i=1;
+	char key;
 	me->randp = false;
 		while(true)
-		{
-			if (_kbhit()==1)
-	    	{	
-				if(getch()==32)break;
+		{	if(!me->bot )
+	    	{
+				if (_kbhit()==1)
+		    	{	
+		    		key=getch();
+		    	}
 	    	}
+	    	else{
+	    			
+		    		int botact=rand()%20;
+					if(botact==0 ) key=32;
+				}
+				if(key==32)break;
 	    	i= rand()%8+1;
 	    	drawevent(p,i);
 	    	Sleep(50);
-
+			
 		}
 		drawevent(p,i);
 	pad* temp;
