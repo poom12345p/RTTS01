@@ -13,7 +13,6 @@ player* play(map &mymap){
 
 	setcursor(0,0);	
 	int turn=0;
-	//int spawnitem =0;
 	bool spawnitem=false;
 	char key;
 	mymap.padgetPlay();
@@ -122,7 +121,7 @@ player* play(map &mymap){
 }
 
 void character(int num,map &mymap,int l,vector<string> face,vector<int> &color_f, vector<int> &color_b){
-	
+	cin.ignore();
 	int chosse=0;
 	char comd;
 	for(int y=0;y<1;y++){ for(int i=0;i<32;i++){ gotoxy(i+l,y);psq(128,0.5); } }
@@ -194,8 +193,7 @@ void character(int num,map &mymap,int l,vector<string> face,vector<int> &color_f
 		gotoxy(5+l,12);
 		colorit(11);
 		cout << "Please input your name: " ;
-		gotoxy(13+l,13);
-		cin.ignore();
+		gotoxy(13+l-1,13);
 		getline(cin,name);
 		gotoxy(5+l,12); psq(1,12);
 		gotoxy(3+l,2); psq(1,14);
@@ -450,8 +448,11 @@ map cremap(){
 	{
 		
 		system("cls");
-		do{	int pX =60,pY=5;
-			
+		do{	
+			int pX =40,pY=5;
+			gotoxy(pX+5,pY);
+			cout<<"Input you map data(number only)";
+			pY=8;
 			gotoxy(pX,pY);
 			for(int i=0;i<12;i++)
 			{
@@ -464,6 +465,7 @@ map cremap(){
 				colorit(12);
 				
 				cout<<"*You input wrong data.*";
+				PlaySound(TEXT("sound/randpad.wav"),NULL,SND_SYNC);
 				colorit(15);
 			}
 			gotoxy(pX,pY);
@@ -473,6 +475,7 @@ map cremap(){
 			cout<<"> ";
 			colorit(15);
 			cin>>max;
+			PlaySound(TEXT("sound/confirm.wav"),NULL,SND_SYNC);
 			pY+=2;
 			gotoxy(pX,pY);
 			cout<<"How many pads do you want per one floor?";
@@ -481,6 +484,7 @@ map cremap(){
 			cout<<"> ";
 			colorit(15);
 			cin>>ppl;
+			PlaySound(TEXT("sound/confirm.wav"),NULL,SND_SYNC);
 			pY+=2;
 			gotoxy(pX,pY);
 			cout<<"How many snake and ladder pads doyou want?";
@@ -491,6 +495,7 @@ map cremap(){
 			cout<<"> ";
 			colorit(15);
 			cin>>li;
+			PlaySound(TEXT("sound/confirm.wav"),NULL,SND_SYNC);
 			pY+=2;
 			gotoxy(pX,pY);
 			cout<<"How many srandom pads doyou want? : ";
@@ -499,6 +504,7 @@ map cremap(){
 			cout<<"> ";
 			colorit(15);
 			cin>>rd;
+			PlaySound(TEXT("sound/confirm.wav"),NULL,SND_SYNC);
 		}while(max-2 < li*4 || max-2-(li*4) < rd || ppl > 12 || max<19);
 		PlaySound(TEXT("sound/menu.wav"),NULL,SND_SYNC);
 	}

@@ -1295,7 +1295,7 @@ void map::padgetPlay(){
 		odp.push_back(&myplayer[i]);
 	}
 	int count=1;
-	int omax;
+	int omax=0;
 	//int max = 0;
 	for(int i=0;i<myplayer.size();i++)
 	{
@@ -1491,7 +1491,10 @@ int player::rolldice(map & m){
 	p.x=150;
 	p.y= p.y+8;
 	int dice;
-	int c=getch();
+	int c;
+/*	if (_kbhit()==1)
+	{
+			c=getch();
 			////god mode////
 	switch (c)
 	{
@@ -1518,6 +1521,7 @@ int player::rolldice(map & m){
 			break;
 	}
 		////god mode////
+	}*/
 	 c='0';
 	vector<int> dicelist;
 	int R=0;
@@ -1543,13 +1547,38 @@ int player::rolldice(map & m){
 		if (_kbhit()==1)
 		{	
 			c=getch();
-			if(c==32)break;
+			switch (c)
+			{
+			case 32:
+				//dice= (rand()%6)+1;
+				break;
+				////god mode////
+			case 113:
+				return 1;
+				break;
+			case 119:
+				return 2;
+				break;
+			case 101:
+				return 3;
+				break;
+			case 114:
+				return 4;
+				break;
+			case 116:
+				return 5;
+				break;
+			case 121:
+				return 6;
+				break;
+				////god mode////
+			//if(c==32)break;
+	    	}
 	    }
 	    gotoxy(6+(R%35)+p.x,p.y+1);
 		if((1+(R%35)/6)%2==0) psq (32,0.5);
 		else psq (203,0.5);
 	    R++;
-	    
 	}
 		gotoxy(6+(R%35)+p.x,p.y+1);
 	    psq(245,0.5);
@@ -1981,13 +2010,15 @@ void randomevent(position &p,player*me){
 	switch(i)
 	{
 		case 1:
-		me->gotopad(rand()%9+1);
 		PlaySound(TEXT("sound/ladder.wav"),NULL,SND_SYNC);
+		me->gotopad(rand()%9+1);
+		
 		break;
 		
 		case 2:
-		me->gotopad(-(rand()%9+1));
 		PlaySound(TEXT("sound/snake.wav"),NULL,SND_SYNC);
+		me->gotopad(-(rand()%9+1));
+		
 		break;
 		
 		case 4://l
